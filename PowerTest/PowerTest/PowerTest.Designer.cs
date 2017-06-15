@@ -105,6 +105,7 @@
             this.TB_Cmd.Name = "TB_Cmd";
             this.TB_Cmd.Size = new System.Drawing.Size(278, 20);
             this.TB_Cmd.TabIndex = 19;
+            this.TB_Cmd.Text = "01 FA 00 00 00 00 00 00 00 FB";
             // 
             // TB_Rsp
             // 

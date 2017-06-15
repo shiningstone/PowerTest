@@ -46,5 +46,17 @@ namespace PowerTest.Properties {
                 this["TestTimes"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DefaultCmd {
+            get {
+                return ((string)(this["DefaultCmd"]));
+            }
+            set {
+                this["DefaultCmd"] = value;
+            }
+        }
     }
 }

@@ -10,6 +10,8 @@ namespace BIModel
     {
         private static Dictionary<string, object> lockDict = new Dictionary<string, object>();
         private readonly SerialPort com = null;
+        public int SendCnt = 0;
+        public int RecvCnt = 0;
         public Comm(string portName, int baudrate=19200, StopBits stopBits=StopBits.One, Parity parity=Parity.None)
         {
             this.com = new SerialPort();
@@ -25,6 +27,8 @@ namespace BIModel
         public void Open()
         {
             this.com.Open();
+            SendCnt = 0;
+            RecvCnt = 0;
         }
         public void Close()
         {
@@ -50,6 +54,7 @@ namespace BIModel
                         bool receive = false;
                         this.com.DataReceived += (sender, e) => { receive = true; };
                         this.com.Write(cmd, 0, cmd.Length);
+                        SendCnt++;
                         Logger.Show(Logger.Level.Command, cmd);
 
                         int cnt = 0;
@@ -67,6 +72,7 @@ namespace BIModel
                         int recvCount = this.com.Read(recvBuffer, 0, recvBuffer.Length);
                         byte[] ret = new byte[recvCount];
                         Array.Copy(recvBuffer, ret, ret.Length);
+                        RecvCnt++;
                         Logger.Show(Logger.Level.Command, ret);
 
                         return ret;
