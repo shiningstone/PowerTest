@@ -134,8 +134,8 @@ namespace BIModel
             }
             else
             {
-                Logger.Show(Logger.Level.Warning, this.com.PortName + "Recv timeout : " + msTimeout.ToString() + " ms");
-                throw new Exception(this.com.PortName + RecvTimeout);
+                Logger.Show(Logger.Level.Warning, this.com.PortName + " Recv timeout : " + msTimeout.ToString() + " ms");
+                throw new Exception(this.com.PortName + " " + RecvTimeout);
             }
         }
         public byte[] Query(byte[] cmd, int msWait=0)
@@ -157,13 +157,10 @@ namespace BIModel
                 catch (Exception ex)
                 {
                     errMessage = ex.Message;
-                }
-                finally
-                {
+                    Logger.Show(Logger.Level.Error, this.com.PortName + " error:" + errMessage);
                     this.com.Close();
+                    throw new Exception(this.com.PortName + " error:" + errMessage);
                 }
-
-                throw new Exception(this.com.PortName + " error:" + errMessage);
             }
         }
     }

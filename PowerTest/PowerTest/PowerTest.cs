@@ -40,11 +40,28 @@ namespace PowerTest
                 BTN_ComCtrl.Enabled = true;
             }
 
-            TB_TestFile.Text = Properties.Settings.Default.TestFile;
-            TB_TestTimes.Text = Properties.Settings.Default.TestTimes;
-            if (TB_Cmd.Text.Length == 0) {
+            /*Single Command Test*/
+            if (TB_Cmd.Text.Length == 0)
+            {
                 TB_Cmd.Text = Properties.Settings.Default.DefaultCmd;
             }
+            /*Multiple Command Test*/
+            TB_TestFile.Text = Properties.Settings.Default.TestFile;
+            TB_TestTimes.Text = Properties.Settings.Default.TestTimes;
+            if (Properties.Settings.Default.TestMode.Equals("Times"))
+            {
+                RB_TestTimes.Checked = true;
+            }
+            else
+            {
+                RB_TestMinutes.Checked = true;
+            }
+            /*Stability Test*/
+            for (int i = 0; i < StabilityTest.Length; i++)
+            {
+                CMB_TestType.Items.Add(StabilityTest[i]);
+            }
+            CMB_TestType.SelectedIndex = 0;
 
             if (CB_LogEnable.Checked)
             {
@@ -123,58 +140,231 @@ namespace PowerTest
 
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                Properties.Settings.Default.TestFile = sfd.FileName.ToString();
-                Properties.Settings.Default.Save();
                 TB_TestFile.Text = sfd.FileName;
             }
         }
 
         private void BTN_Start_Click(object sender, EventArgs e)
         {
-            string file = TB_TestFile.Text;
-            int times = Int32.Parse(TB_TestTimes.Text);
-            Properties.Settings.Default.TestTimes = TB_TestTimes.Text;
+            Logger.mLevel = Logger.Level.Operation;
+
+            int times = 0;
+
+            if (RB_TestTimes.Checked)
+            {
+                times = Int32.Parse(TB_TestTimes.Text);
+                Properties.Settings.Default.TestTimes = TB_TestTimes.Text;
+                Properties.Settings.Default.TestMode = "Times";
+            }
+            else
+            {
+                times = Int32.Parse(TB_TestMinutes.Text);
+                Properties.Settings.Default.TestMinutes = TB_TestMinutes.Text;
+                Properties.Settings.Default.TestMode = "Minute";
+            }
+
+            Properties.Settings.Default.TestFile = TB_TestFile.Text;
             Properties.Settings.Default.Save();
+
             BTN_Start.Enabled = false;
 
-            SendFile(file, times);
+            TB_Result.Text = "Performance @ " + System.DateTime.Now + ", File: " + Path.GetFileName(TB_TestFile.Text);
+            Logger.Show(Logger.Level.Operation, TB_Result.Text);
+
+            lastOutput = 1;
+            SendFile(TB_TestFile.Text, times, Properties.Settings.Default.TestMode);
 
             BTN_Start.Enabled = true;
         }
-
-        private void SendFile(string file, int times)
+        private int lastOutput = 1;
+        private void ShowResult(Label lbl, DateTime start, int count, bool force = true)
         {
-            int count = 0;
+            const int OutputInt = 600;
 
-            DateTime start = System.DateTime.Now;
-            while (count < times)
-            {
-                StreamReader sr = new StreamReader(file, Encoding.Default);
-                String line;
-                while ((line = sr.ReadLine()) != null)
-                {
-                    if (line.Substring(0, 2).Equals("//"))
-                    {
-                        String delay = line.Split(' ')[1];
-                        Thread.Sleep(Int32.Parse(delay));
-                    }
-                    else
-                    {
-                        port.Query(Frame(_HexStringToBytes(line.Replace(" ", ""))));
-                    }
-                }
-
-                count++;
-            }
             DateTime stop = System.DateTime.Now;
             TimeSpan ts = stop.Subtract(start);
 
-            TB_Result.Text = String.Format(
-                "Performance Test {0} times(send {1} , receive {2}): Total {3} ms",
-                count, port.GetSendCnt(), port.GetRecvCnt(), ts);
-            Logger.Show(Logger.Level.Operation, TB_Result.Text);
-        }
+            if (((int)ts.TotalSeconds / OutputInt) > lastOutput || force)
+            {
+                lbl.Text = String.Format(
+                    "Test {0} times(send {1} , receive {2}): Total {3} ms",
+                    count, port.GetSendCnt(), port.GetRecvCnt(), ts);
 
+                Logger.Show(Logger.Level.Operation, TB_Result.Text);
+
+                lastOutput = (int)ts.TotalSeconds / OutputInt;
+            }
+        }
+        private void SendFileOnce(StreamReader sr)
+        {
+            sr.BaseStream.Seek(0, SeekOrigin.Begin);
+
+            String line;
+            while ((line = sr.ReadLine()) != null)
+            {
+                if (line.Substring(0, 2).Equals("//"))
+                {
+                    String delay = line.Split(' ')[1];
+                    Thread.Sleep(Int32.Parse(delay));
+                }
+                else
+                {
+                    port.Query(Frame(_HexStringToBytes(line.Replace(" ", ""))));
+                }
+            }
+        }
+        private void SendFile(string file, int times, string mode)
+        {
+            int count = 0;
+            DateTime start = System.DateTime.Now;
+
+            StreamReader sr = new StreamReader(file, Encoding.Default);
+
+            if (mode.Equals("Times"))
+            {
+                while (count < times)
+                {
+                    SendFileOnce(sr);
+                    count++;
+                }
+            }
+            else
+            {
+                while (true)
+                {
+                    TimeSpan ts = System.DateTime.Now.Subtract(start);
+
+                    if ((int)ts.TotalMinutes < times)
+                    {
+                        SendFileOnce(sr);
+                        count++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            ShowResult(TB_Result, start, count);
+        }
+        #region Stability Test
+        string[] StabilityTest = new string[] {
+            "SingleCurrent",
+            "MultiCurrent",
+        };
+        private void BTN_StabilityStart_Click(object sender, EventArgs e)
+        {
+            int option = CMB_TestType.SelectedIndex;
+            int duration = Int32.Parse(TB_Duration.Text);
+            bool forceClose = CB_ForceClose.Checked;
+            bool forceDisconnect = CB_ForceDisconnect.Checked;
+            int cmdCount = 0;
+
+            DateTime start = System.DateTime.Now;
+            TB_StabilityResult.Text = StabilityTest[option] + " Start @ " + start + "(" + forceClose + "," + forceDisconnect + ")";
+            Logger.Show(Logger.Level.Operation, TB_StabilityResult.Text);
+
+            switch (option)
+            {
+                case 0:
+                    cmdCount = SingleCurrentTest(start, duration);
+                    break;
+                case 1:
+                    cmdCount = MultiCurrentTest(start, duration);
+                    break;
+            }
+
+            ShowResult(TB_StabilityResult, start, cmdCount);
+        }
+        private void SaveData(StreamWriter dat, double[] current, double[] voltage)
+        {
+            string oneshot = "";
+            for (int i = 0; i < current.Length; i++)
+            {
+                oneshot += current[i].ToString("0.000");
+            }
+            for (int i = 0; i < voltage.Length; i++)
+            {
+                oneshot += voltage[i].ToString("0.000");
+            }
+
+            dat.Write(oneshot + "\n");
+            dat.Flush();
+        }
+        private int SingleCurrentTest(DateTime start, int duration, int interval = 100)
+        {
+            StreamWriter dat = new StreamWriter(new FileStream("SingleCurrentTest.dat", FileMode.Append));
+
+            JzhPower jzh = port as JzhPower;
+            double[] current;
+            double[] voltage;
+            int count = 0;
+
+            jzh.SetCurrent(4);
+            count++;
+
+            TimeSpan ts = System.DateTime.Now.Subtract(start);
+            while ((int)ts.TotalMinutes < duration)
+            {
+                if (CB_ForceClose.Checked)
+                {
+                    jzh.Open();
+                    jzh.ReadVoltageAndCurrent(out current, out voltage);
+                    jzh.Close();
+                }
+                else
+                {
+                    jzh.ReadVoltageAndCurrent(out current, out voltage);
+                }
+                SaveData(dat, current, voltage);
+                count++;
+                Thread.Sleep(interval);
+
+                ts = System.DateTime.Now.Subtract(start);
+            }
+
+            return count;
+        }
+        private int MultiCurrentTest(DateTime start, int duration, int interval = 100)
+        {
+            StreamWriter dat = new StreamWriter(new FileStream("MultiCurrentTest.dat", FileMode.Append));
+
+            JzhPower jzh = port as JzhPower;
+            double[] testPoint = new double[4] { 1, 2, 3, 4 };
+            double[] current;
+            double[] voltage;
+            int count = 0;
+
+            for (int i = 0; i < testPoint.Length; i++)
+            {
+                jzh.SetCurrent(testPoint[i]);
+                count++;
+
+                TimeSpan ts = System.DateTime.Now.Subtract(start);
+                while ((int)ts.TotalMinutes < (int)(duration / testPoint.Length))
+                {
+                    if (CB_ForceClose.Checked)
+                    {
+                        jzh.Open();
+                        jzh.ReadVoltageAndCurrent(out current, out voltage);
+                        jzh.Close();
+                    }
+                    else
+                    {
+                        jzh.ReadVoltageAndCurrent(out current, out voltage);
+                    }
+                    SaveData(dat, current, voltage);
+                    count++;
+                    Thread.Sleep(interval);
+
+                    ts = System.DateTime.Now.Subtract(start);
+                }
+            }
+
+            return count;
+        }
+        #endregion
         private void CB_LogEnable_CheckedChanged(object sender, EventArgs e)
         {
             if (CB_LogEnable.Checked)

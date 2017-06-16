@@ -195,11 +195,11 @@ namespace APPLEDIE
 
                     if (times < MAX_TRY - 1)
                     {
-                        Logger.Show(Logger.Level.Warning, QueryFail + e.Message + ", retry ...");
+                        Logger.Show(Logger.Level.Warning, QueryFail + "," + e.Message + ", retry ...");
                     }
                     else
                     {
-                        Logger.Show(Logger.Level.Error, QueryFail + e.Message + ", abort");
+                        Logger.Show(Logger.Level.Error, QueryFail + "," + e.Message + ", abort");
                         throw new Exception(QueryFail + e.Message);
                     }
                 }

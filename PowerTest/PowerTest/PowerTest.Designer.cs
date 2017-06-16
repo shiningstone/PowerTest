@@ -43,14 +43,29 @@
             this.label4 = new System.Windows.Forms.Label();
             this.TB_Log = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.CB_ElecModuleEnable = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.CB_ElecModuleEnable = new System.Windows.Forms.CheckBox();
-            this.CB_LogEnable = new System.Windows.Forms.CheckBox();
             this.TB_Result = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.CB_LogEnable = new System.Windows.Forms.CheckBox();
+            this.RB_TestTimes = new System.Windows.Forms.RadioButton();
+            this.RB_TestMinutes = new System.Windows.Forms.RadioButton();
+            this.label6 = new System.Windows.Forms.Label();
+            this.TB_TestMinutes = new System.Windows.Forms.TextBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.CMB_TestType = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.TB_Duration = new System.Windows.Forms.TextBox();
+            this.Minutes = new System.Windows.Forms.Label();
+            this.CB_ForceClose = new System.Windows.Forms.CheckBox();
+            this.CB_ForceDisconnect = new System.Windows.Forms.CheckBox();
+            this.BTN_StabilityStart = new System.Windows.Forms.Button();
+            this.TB_StabilityResult = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -155,16 +170,16 @@
             // 
             // TB_TestTimes
             // 
-            this.TB_TestTimes.Location = new System.Drawing.Point(10, 62);
+            this.TB_TestTimes.Location = new System.Drawing.Point(30, 62);
             this.TB_TestTimes.Name = "TB_TestTimes";
-            this.TB_TestTimes.Size = new System.Drawing.Size(100, 20);
+            this.TB_TestTimes.Size = new System.Drawing.Size(56, 20);
             this.TB_TestTimes.TabIndex = 25;
             this.TB_TestTimes.Text = "1";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(116, 65);
+            this.label4.Location = new System.Drawing.Point(87, 65);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(35, 13);
             this.label4.TabIndex = 26;
@@ -193,6 +208,17 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Com";
             // 
+            // CB_ElecModuleEnable
+            // 
+            this.CB_ElecModuleEnable.AutoSize = true;
+            this.CB_ElecModuleEnable.Location = new System.Drawing.Point(163, 36);
+            this.CB_ElecModuleEnable.Name = "CB_ElecModuleEnable";
+            this.CB_ElecModuleEnable.Size = new System.Drawing.Size(96, 17);
+            this.CB_ElecModuleEnable.TabIndex = 30;
+            this.CB_ElecModuleEnable.Text = "ElectricModule";
+            this.CB_ElecModuleEnable.UseVisualStyleBackColor = true;
+            this.CB_ElecModuleEnable.CheckedChanged += new System.EventHandler(this.CB_ElecModuleEnable_CheckedChanged);
+            // 
             // groupBox2
             // 
             this.groupBox2.Location = new System.Drawing.Point(4, 82);
@@ -204,6 +230,10 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.RB_TestMinutes);
+            this.groupBox3.Controls.Add(this.label6);
+            this.groupBox3.Controls.Add(this.TB_TestMinutes);
+            this.groupBox3.Controls.Add(this.RB_TestTimes);
             this.groupBox3.Controls.Add(this.TB_Result);
             this.groupBox3.Controls.Add(this.label5);
             this.groupBox3.Controls.Add(this.TB_TestFile);
@@ -216,7 +246,15 @@
             this.groupBox3.Size = new System.Drawing.Size(407, 108);
             this.groupBox3.TabIndex = 0;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Multiple Command Text";
+            this.groupBox3.Text = "Multiple Command Test";
+            // 
+            // TB_Result
+            // 
+            this.TB_Result.AutoSize = true;
+            this.TB_Result.Location = new System.Drawing.Point(9, 90);
+            this.TB_Result.Name = "TB_Result";
+            this.TB_Result.Size = new System.Drawing.Size(0, 13);
+            this.TB_Result.TabIndex = 30;
             // 
             // label5
             // 
@@ -226,17 +264,6 @@
             this.label5.Size = new System.Drawing.Size(73, 13);
             this.label5.TabIndex = 29;
             this.label5.Text = "Command File";
-            // 
-            // CB_ElecModuleEnable
-            // 
-            this.CB_ElecModuleEnable.AutoSize = true;
-            this.CB_ElecModuleEnable.Location = new System.Drawing.Point(163, 36);
-            this.CB_ElecModuleEnable.Name = "CB_ElecModuleEnable";
-            this.CB_ElecModuleEnable.Size = new System.Drawing.Size(96, 17);
-            this.CB_ElecModuleEnable.TabIndex = 30;
-            this.CB_ElecModuleEnable.Text = "ElectricModule";
-            this.CB_ElecModuleEnable.UseVisualStyleBackColor = true;
-            this.CB_ElecModuleEnable.CheckedChanged += new System.EventHandler(this.CB_ElecModuleEnable_CheckedChanged);
             // 
             // CB_LogEnable
             // 
@@ -249,19 +276,148 @@
             this.CB_LogEnable.UseVisualStyleBackColor = true;
             this.CB_LogEnable.CheckedChanged += new System.EventHandler(this.CB_LogEnable_CheckedChanged);
             // 
-            // TB_Result
+            // RB_TestTimes
             // 
-            this.TB_Result.AutoSize = true;
-            this.TB_Result.Location = new System.Drawing.Point(9, 90);
-            this.TB_Result.Name = "TB_Result";
-            this.TB_Result.Size = new System.Drawing.Size(0, 13);
-            this.TB_Result.TabIndex = 30;
+            this.RB_TestTimes.AutoSize = true;
+            this.RB_TestTimes.Location = new System.Drawing.Point(12, 65);
+            this.RB_TestTimes.Name = "RB_TestTimes";
+            this.RB_TestTimes.Size = new System.Drawing.Size(14, 13);
+            this.RB_TestTimes.TabIndex = 33;
+            this.RB_TestTimes.TabStop = true;
+            this.RB_TestTimes.UseVisualStyleBackColor = true;
+            // 
+            // RB_TestMinutes
+            // 
+            this.RB_TestMinutes.AutoSize = true;
+            this.RB_TestMinutes.Location = new System.Drawing.Point(135, 64);
+            this.RB_TestMinutes.Name = "RB_TestMinutes";
+            this.RB_TestMinutes.Size = new System.Drawing.Size(14, 13);
+            this.RB_TestMinutes.TabIndex = 36;
+            this.RB_TestMinutes.TabStop = true;
+            this.RB_TestMinutes.UseVisualStyleBackColor = true;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(210, 64);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(44, 13);
+            this.label6.TabIndex = 35;
+            this.label6.Text = "Minutes";
+            // 
+            // TB_TestMinutes
+            // 
+            this.TB_TestMinutes.Location = new System.Drawing.Point(153, 61);
+            this.TB_TestMinutes.Name = "TB_TestMinutes";
+            this.TB_TestMinutes.Size = new System.Drawing.Size(56, 20);
+            this.TB_TestMinutes.TabIndex = 34;
+            this.TB_TestMinutes.Text = "1";
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.TB_StabilityResult);
+            this.groupBox4.Controls.Add(this.BTN_StabilityStart);
+            this.groupBox4.Controls.Add(this.CB_ForceDisconnect);
+            this.groupBox4.Controls.Add(this.CB_ForceClose);
+            this.groupBox4.Controls.Add(this.Minutes);
+            this.groupBox4.Controls.Add(this.TB_Duration);
+            this.groupBox4.Controls.Add(this.label8);
+            this.groupBox4.Controls.Add(this.label7);
+            this.groupBox4.Controls.Add(this.CMB_TestType);
+            this.groupBox4.Location = new System.Drawing.Point(4, 286);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(406, 125);
+            this.groupBox4.TabIndex = 37;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Stability Test";
+            // 
+            // CMB_TestType
+            // 
+            this.CMB_TestType.FormattingEnabled = true;
+            this.CMB_TestType.Location = new System.Drawing.Point(80, 21);
+            this.CMB_TestType.Name = "CMB_TestType";
+            this.CMB_TestType.Size = new System.Drawing.Size(121, 21);
+            this.CMB_TestType.TabIndex = 0;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(14, 26);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(55, 13);
+            this.label7.TabIndex = 38;
+            this.label7.Text = "Test Type";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(17, 54);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(47, 13);
+            this.label8.TabIndex = 39;
+            this.label8.Text = "Duration";
+            // 
+            // TB_Duration
+            // 
+            this.TB_Duration.Location = new System.Drawing.Point(81, 51);
+            this.TB_Duration.Name = "TB_Duration";
+            this.TB_Duration.Size = new System.Drawing.Size(68, 20);
+            this.TB_Duration.TabIndex = 40;
+            this.TB_Duration.Text = "1";
+            // 
+            // Minutes
+            // 
+            this.Minutes.AutoSize = true;
+            this.Minutes.Location = new System.Drawing.Point(155, 54);
+            this.Minutes.Name = "Minutes";
+            this.Minutes.Size = new System.Drawing.Size(44, 13);
+            this.Minutes.TabIndex = 41;
+            this.Minutes.Text = "Minutes";
+            // 
+            // CB_ForceClose
+            // 
+            this.CB_ForceClose.AutoSize = true;
+            this.CB_ForceClose.Location = new System.Drawing.Point(18, 88);
+            this.CB_ForceClose.Name = "CB_ForceClose";
+            this.CB_ForceClose.Size = new System.Drawing.Size(108, 17);
+            this.CB_ForceClose.TabIndex = 42;
+            this.CB_ForceClose.Text = "With Open/Close";
+            this.CB_ForceClose.UseVisualStyleBackColor = true;
+            // 
+            // CB_ForceDisconnect
+            // 
+            this.CB_ForceDisconnect.AutoSize = true;
+            this.CB_ForceDisconnect.Location = new System.Drawing.Point(135, 88);
+            this.CB_ForceDisconnect.Name = "CB_ForceDisconnect";
+            this.CB_ForceDisconnect.Size = new System.Drawing.Size(150, 17);
+            this.CB_ForceDisconnect.TabIndex = 43;
+            this.CB_ForceDisconnect.Text = "With Connect/Disconnect";
+            this.CB_ForceDisconnect.UseVisualStyleBackColor = true;
+            // 
+            // BTN_StabilityStart
+            // 
+            this.BTN_StabilityStart.Location = new System.Drawing.Point(316, 82);
+            this.BTN_StabilityStart.Name = "BTN_StabilityStart";
+            this.BTN_StabilityStart.Size = new System.Drawing.Size(75, 23);
+            this.BTN_StabilityStart.TabIndex = 37;
+            this.BTN_StabilityStart.Text = "Start";
+            this.BTN_StabilityStart.UseVisualStyleBackColor = true;
+            this.BTN_StabilityStart.Click += new System.EventHandler(this.BTN_StabilityStart_Click);
+            // 
+            // TB_StabilityResult
+            // 
+            this.TB_StabilityResult.AutoSize = true;
+            this.TB_StabilityResult.Location = new System.Drawing.Point(8, 106);
+            this.TB_StabilityResult.Name = "TB_StabilityResult";
+            this.TB_StabilityResult.Size = new System.Drawing.Size(0, 13);
+            this.TB_StabilityResult.TabIndex = 38;
             // 
             // PowerTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(847, 414);
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.CB_LogEnable);
             this.Controls.Add(this.TB_Log);
             this.Controls.Add(this.BTN_Send);
@@ -278,6 +434,8 @@
             this.groupBox1.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -306,6 +464,20 @@
         private System.Windows.Forms.CheckBox CB_ElecModuleEnable;
         private System.Windows.Forms.CheckBox CB_LogEnable;
         private System.Windows.Forms.Label TB_Result;
+        private System.Windows.Forms.RadioButton RB_TestMinutes;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox TB_TestMinutes;
+        private System.Windows.Forms.RadioButton RB_TestTimes;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox CMB_TestType;
+        private System.Windows.Forms.Label Minutes;
+        private System.Windows.Forms.TextBox TB_Duration;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.CheckBox CB_ForceDisconnect;
+        private System.Windows.Forms.CheckBox CB_ForceClose;
+        private System.Windows.Forms.Button BTN_StabilityStart;
+        private System.Windows.Forms.Label TB_StabilityResult;
     }
 }
 

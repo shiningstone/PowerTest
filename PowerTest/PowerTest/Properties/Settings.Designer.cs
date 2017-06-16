@@ -58,5 +58,29 @@ namespace PowerTest.Properties {
                 this["DefaultCmd"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TestMinutes {
+            get {
+                return ((string)(this["TestMinutes"]));
+            }
+            set {
+                this["TestMinutes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Times")]
+        public string TestMode {
+            get {
+                return ((string)(this["TestMode"]));
+            }
+            set {
+                this["TestMode"] = value;
+            }
+        }
     }
 }

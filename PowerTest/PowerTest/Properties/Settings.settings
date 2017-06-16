@@ -11,5 +11,11 @@
     <Setting Name="DefaultCmd" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="TestMinutes" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="TestMode" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Times</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
