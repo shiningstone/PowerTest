@@ -12,7 +12,7 @@ using System.Windows.Forms;
 using BIModel;
 using System.Threading;
 using System.IO;
-
+using APPLEDIE;
 
 namespace PowerTest
 {
@@ -24,7 +24,7 @@ namespace PowerTest
         }
         BoardType gBoard = BoardType.RftpTest;
 
-        Comm port = null;
+        Iport port = null;
         public PowerTest()
         {
             InitializeComponent();
@@ -56,7 +56,14 @@ namespace PowerTest
         {
             if (port == null)
             {
-                port = new Comm(drpComList.SelectedItem.ToString(), 115200);
+                if (!CB_ElecModuleEnable.Checked)
+                {
+                    port = new Comm(drpComList.SelectedItem.ToString(), 115200);
+                }
+                else
+                {
+                    port = new JzhPower(drpComList.SelectedItem.ToString());
+                }
                 port.Open();
                 BTN_ComCtrl.Text = "Close";
             }
@@ -146,7 +153,15 @@ namespace PowerTest
                 String line;
                 while ((line = sr.ReadLine()) != null)
                 {
-                    port.Query(Frame(_HexStringToBytes(line.Replace(" ", ""))));
+                    if (line.Substring(0, 2).Equals("//"))
+                    {
+                        String delay = line.Split(' ')[1];
+                        Thread.Sleep(Int32.Parse(delay));
+                    }
+                    else
+                    {
+                        port.Query(Frame(_HexStringToBytes(line.Replace(" ", ""))));
+                    }
                 }
 
                 count++;
@@ -154,9 +169,10 @@ namespace PowerTest
             DateTime stop = System.DateTime.Now;
             TimeSpan ts = stop.Subtract(start);
 
-            Logger.Show(Logger.Level.Operation, String.Format(
+            TB_Result.Text = String.Format(
                 "Performance Test {0} times(send {1} , receive {2}): Total {3} ms",
-                count, port.SendCnt, port.RecvCnt, ts));
+                count, port.GetSendCnt(), port.GetRecvCnt(), ts);
+            Logger.Show(Logger.Level.Operation, TB_Result.Text);
         }
 
         private void CB_LogEnable_CheckedChanged(object sender, EventArgs e)
@@ -170,6 +186,10 @@ namespace PowerTest
                 TB_Log.Text = "";
                 Logger.action = null;
             }
+        }
+        private void CB_ElecModuleEnable_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
         /* this function is used for rftp board*/
         private byte[] Frame(byte[] cmd)
@@ -231,5 +251,6 @@ namespace PowerTest
                 return (byte)((value & 0x00ff));
             }
         }
+
     }
 }

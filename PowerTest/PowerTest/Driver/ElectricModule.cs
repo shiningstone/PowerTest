@@ -49,6 +49,10 @@ namespace APPLEDIE
             com = new Comm(comNum, 38400);
         }
 
+        private byte[] Query(byte[] cmd, int sleep=0)
+        {
+            return com.Query(cmd, sleep); 
+        }
         public void SetCurrent(double current)
         {
             try

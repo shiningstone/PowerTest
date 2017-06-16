@@ -48,6 +48,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.CB_ElecModuleEnable = new System.Windows.Forms.CheckBox();
             this.CB_LogEnable = new System.Windows.Forms.CheckBox();
+            this.TB_Result = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.SuspendLayout();
@@ -203,6 +204,7 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.TB_Result);
             this.groupBox3.Controls.Add(this.label5);
             this.groupBox3.Controls.Add(this.TB_TestFile);
             this.groupBox3.Controls.Add(this.label4);
@@ -211,7 +213,7 @@
             this.groupBox3.Controls.Add(this.BTN_Start);
             this.groupBox3.Location = new System.Drawing.Point(4, 172);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(407, 88);
+            this.groupBox3.Size = new System.Drawing.Size(407, 108);
             this.groupBox3.TabIndex = 0;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Multiple Command Text";
@@ -234,6 +236,7 @@
             this.CB_ElecModuleEnable.TabIndex = 30;
             this.CB_ElecModuleEnable.Text = "ElectricModule";
             this.CB_ElecModuleEnable.UseVisualStyleBackColor = true;
+            this.CB_ElecModuleEnable.CheckedChanged += new System.EventHandler(this.CB_ElecModuleEnable_CheckedChanged);
             // 
             // CB_LogEnable
             // 
@@ -245,6 +248,14 @@
             this.CB_LogEnable.Text = "Log Enable";
             this.CB_LogEnable.UseVisualStyleBackColor = true;
             this.CB_LogEnable.CheckedChanged += new System.EventHandler(this.CB_LogEnable_CheckedChanged);
+            // 
+            // TB_Result
+            // 
+            this.TB_Result.AutoSize = true;
+            this.TB_Result.Location = new System.Drawing.Point(9, 90);
+            this.TB_Result.Name = "TB_Result";
+            this.TB_Result.Size = new System.Drawing.Size(0, 13);
+            this.TB_Result.TabIndex = 30;
             // 
             // PowerTest
             // 
@@ -294,6 +305,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox CB_ElecModuleEnable;
         private System.Windows.Forms.CheckBox CB_LogEnable;
+        private System.Windows.Forms.Label TB_Result;
     }
 }
 

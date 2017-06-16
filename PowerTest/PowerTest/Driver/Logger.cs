@@ -13,6 +13,8 @@ namespace BIModel
         public static logAction action;
         public enum Level
         {
+            Error,
+            Warning,
             Operation,     /*设备操作*/
             Bus,           /*总线、寄存器操作*/
             Command,       /*USB报文内容*/

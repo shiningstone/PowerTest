@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Driver\Comm.cs" />
+    <Compile Include="Driver\JzhPower.cs" />
     <Compile Include="Driver\ElectricModule.cs" />
     <Compile Include="Driver\Logger.cs" />
     <Compile Include="PowerTest.cs">
