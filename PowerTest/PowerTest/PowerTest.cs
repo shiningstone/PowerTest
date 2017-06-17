@@ -34,6 +34,8 @@ namespace PowerTest
             {
                 drpComList.Items.Add(port);
             }
+            drpComList.Items.Add("Mock");
+
             if (drpComList.Items.Count > 0)
             {
                 drpComList.SelectedIndex = 0;
@@ -78,12 +80,12 @@ namespace PowerTest
             {
                 if (!CB_ElecModuleEnable.Checked)
                 {
-                    port = new Comm(drpComList.SelectedItem.ToString(), 115200);
+                    port = Comm.GetComm(drpComList.SelectedItem.ToString(), 115200);
                 }
                 else
                 {
                     string part = RB_PartA.Checked ? "A" : "B";
-                    port = new JzhPower(drpComList.SelectedItem.ToString(), part);
+                    port = new JzhPower(Comm.GetComm(drpComList.SelectedItem.ToString(), 38400), part);
                 }
                 port.Open();
 
@@ -291,13 +293,17 @@ namespace PowerTest
         private void SaveData(StreamWriter dat, double[] current, double[] voltage)
         {
             string oneshot = "";
+
+            oneshot += "Current: ";
             for (int i = 0; i < current.Length; i++)
             {
-                oneshot += current[i].ToString("0.000");
+                oneshot += current[i].ToString("0.000") + " ";
             }
+
+            oneshot += "Voltage: ";
             for (int i = 0; i < voltage.Length; i++)
             {
-                oneshot += voltage[i].ToString("0.000");
+                oneshot += voltage[i].ToString("0.000") + " ";
             }
 
             dat.Write(oneshot + "\n");

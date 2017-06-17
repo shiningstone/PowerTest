@@ -37,6 +37,17 @@ namespace BIModel
         public int SendCnt = 0;
         public int RecvCnt = 0;             /*由于接收大包有可能分成几次，RecvCnt不一定等于SendCnt*/
 
+        public static Comm GetComm(string portName, int baudrate)
+        {
+            if (!portName.Equals("Mock"))
+            {
+                return new Comm(portName, baudrate);
+            }
+            else
+            {
+                return new CommMock(portName, baudrate);
+            }
+        }
         public Comm(string portName, int baudrate=19200, StopBits stopBits=StopBits.One, Parity parity=Parity.None)
         {
             this.com = new SerialPort();
@@ -50,7 +61,7 @@ namespace BIModel
             if (false == lockDict.ContainsKey(com.PortName))
                 lockDict[com.PortName] = new object();
         }
-        public void Open()
+        virtual public void Open()
         {
             this.com.Open();
             this.com.DataReceived += (sender, e) => { ArriveFlag = true; };
@@ -58,19 +69,19 @@ namespace BIModel
             SendCnt = 0;
             RecvCnt = 0;
         }
-        public void Close()
+        virtual public void Close()
         {
             this.com.Close();
         }
-        public bool IsOpen()
+        virtual public bool IsOpen()
         {
             return this.com.IsOpen;
         }
-        public int GetSendCnt()
+        virtual public int GetSendCnt()
         {
             return SendCnt;
         }
-        public int GetRecvCnt()
+        virtual public int GetRecvCnt()
         {
             return RecvCnt;
         }
@@ -138,7 +149,7 @@ namespace BIModel
                 throw new Exception(this.com.PortName + " " + RecvTimeout);
             }
         }
-        public byte[] Query(byte[] cmd, int msWait=0)
+        virtual public byte[] Query(byte[] cmd, int msWait=0)
         {
             string errMessage = "";
 
@@ -164,4 +175,70 @@ namespace BIModel
             }
         }
     }
+
+    public class CommMock : Comm
+    {
+        public CommMock(string portName, int baudrate = 19200, StopBits stopBits = StopBits.One, Parity parity = Parity.None)
+            : base(portName, baudrate, stopBits, parity)
+        {
+        }
+        public override void Open()
+        {
+            SendCnt = 0;
+            RecvCnt = 0;
+        }
+        public override void Close()
+        {
+        }
+        public override bool IsOpen()
+        {
+            return true;
+        }
+        public override byte[] Query(byte[] cmd, int msWait = 0)
+        {
+            Logger.Show(Logger.Level.Command, cmd);
+
+            byte[] rsp = Respond(cmd);
+            Logger.Show(Logger.Level.Command, rsp);
+            return rsp;
+        }
+
+        #region JZH 
+        private byte[] Respond(byte[] cmd)
+        {
+            byte[] rsp;
+
+            if (cmd[4] == 0x13)
+            {
+                if (cmd[3] == 0x09)/*connect & disconnect*/
+                {
+                    rsp = new byte[] { 0x68, 0x01, 0x01, 0x09, 0x93, 0x40, 0x00, 0x4B, 0x91 };
+                }
+                else
+                {
+                    rsp = new byte[] { 0x68, 0x01, 0x01, 0x09, 0x93, 0x40, 0x00, 0x4B, 0x91 };
+                }
+            }
+            else
+            {
+                rsp = new byte[328];
+
+                rsp[0] = cmd[0];
+                rsp[1] = cmd[1];
+                rsp[2] = cmd[2];
+                rsp[4] = (byte)(cmd[4] + 0x80);
+
+                byte cs = 0;
+                for (int i = 1; i < rsp.Length-1; i++)
+                {
+                    cs = (byte)(cs ^ rsp[i]);
+                }
+                rsp[rsp.Length - 1] = cs;
+            }
+
+            return rsp;
+        }
+        #endregion
+    }
+
 }
