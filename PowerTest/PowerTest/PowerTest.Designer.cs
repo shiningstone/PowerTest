@@ -63,6 +63,8 @@
             this.CB_ForceDisconnect = new System.Windows.Forms.CheckBox();
             this.BTN_StabilityStart = new System.Windows.Forms.Button();
             this.TB_StabilityResult = new System.Windows.Forms.Label();
+            this.RB_PartA = new System.Windows.Forms.RadioButton();
+            this.RB_PartB = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -192,12 +194,14 @@
             this.TB_Log.Name = "TB_Log";
             this.TB_Log.ReadOnly = true;
             this.TB_Log.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.TB_Log.Size = new System.Drawing.Size(429, 381);
+            this.TB_Log.Size = new System.Drawing.Size(429, 407);
             this.TB_Log.TabIndex = 27;
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.RB_PartA);
             this.groupBox1.Controls.Add(this.CB_ElecModuleEnable);
+            this.groupBox1.Controls.Add(this.RB_PartB);
             this.groupBox1.Controls.Add(this.BTN_ComCtrl);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.drpComList);
@@ -211,7 +215,7 @@
             // CB_ElecModuleEnable
             // 
             this.CB_ElecModuleEnable.AutoSize = true;
-            this.CB_ElecModuleEnable.Location = new System.Drawing.Point(163, 36);
+            this.CB_ElecModuleEnable.Location = new System.Drawing.Point(165, 23);
             this.CB_ElecModuleEnable.Name = "CB_ElecModuleEnable";
             this.CB_ElecModuleEnable.Size = new System.Drawing.Size(96, 17);
             this.CB_ElecModuleEnable.TabIndex = 30;
@@ -221,7 +225,7 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Location = new System.Drawing.Point(4, 82);
+            this.groupBox2.Location = new System.Drawing.Point(3, 92);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(407, 84);
             this.groupBox2.TabIndex = 0;
@@ -241,7 +245,7 @@
             this.groupBox3.Controls.Add(this.BTN_Select);
             this.groupBox3.Controls.Add(this.TB_TestTimes);
             this.groupBox3.Controls.Add(this.BTN_Start);
-            this.groupBox3.Location = new System.Drawing.Point(4, 172);
+            this.groupBox3.Location = new System.Drawing.Point(3, 191);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(407, 108);
             this.groupBox3.TabIndex = 0;
@@ -324,7 +328,7 @@
             this.groupBox4.Controls.Add(this.label8);
             this.groupBox4.Controls.Add(this.label7);
             this.groupBox4.Controls.Add(this.CMB_TestType);
-            this.groupBox4.Location = new System.Drawing.Point(4, 286);
+            this.groupBox4.Location = new System.Drawing.Point(5, 312);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(406, 125);
             this.groupBox4.TabIndex = 37;
@@ -412,11 +416,33 @@
             this.TB_StabilityResult.Size = new System.Drawing.Size(0, 13);
             this.TB_StabilityResult.TabIndex = 38;
             // 
+            // RB_PartA
+            // 
+            this.RB_PartA.AutoSize = true;
+            this.RB_PartA.Location = new System.Drawing.Point(183, 46);
+            this.RB_PartA.Name = "RB_PartA";
+            this.RB_PartA.Size = new System.Drawing.Size(32, 17);
+            this.RB_PartA.TabIndex = 31;
+            this.RB_PartA.TabStop = true;
+            this.RB_PartA.Text = "A";
+            this.RB_PartA.UseVisualStyleBackColor = true;
+            // 
+            // RB_PartB
+            // 
+            this.RB_PartB.AutoSize = true;
+            this.RB_PartB.Location = new System.Drawing.Point(221, 46);
+            this.RB_PartB.Name = "RB_PartB";
+            this.RB_PartB.Size = new System.Drawing.Size(32, 17);
+            this.RB_PartB.TabIndex = 32;
+            this.RB_PartB.TabStop = true;
+            this.RB_PartB.Text = "B";
+            this.RB_PartB.UseVisualStyleBackColor = true;
+            // 
             // PowerTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(847, 414);
+            this.ClientSize = new System.Drawing.Size(847, 440);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.CB_LogEnable);
             this.Controls.Add(this.TB_Log);
@@ -478,6 +504,8 @@
         private System.Windows.Forms.CheckBox CB_ForceClose;
         private System.Windows.Forms.Button BTN_StabilityStart;
         private System.Windows.Forms.Label TB_StabilityResult;
+        private System.Windows.Forms.RadioButton RB_PartA;
+        private System.Windows.Forms.RadioButton RB_PartB;
     }
 }
 

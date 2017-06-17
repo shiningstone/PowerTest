@@ -55,6 +55,28 @@ namespace APPLEDIE
         }
         public void SetCurrent(double current)
         {
+            if (current < 4001)
+            {
+                this.SetUpVoltage(cmdDictionary["A"]["SetVol00t1940"]);
+                this.SetUpVoltage(cmdDictionary["A"]["SetVol20t3940"]);
+                this.SetUpVoltage(cmdDictionary["B"]["SetVol00t1940"]);
+                this.SetUpVoltage(cmdDictionary["B"]["SetVol20t3940"]);
+            }
+            else //if ((current > 4000) && (current < 4501))
+            {
+                this.SetUpVoltage(cmdDictionary["A"]["SetVol00t1945"]);
+                this.SetUpVoltage(cmdDictionary["A"]["SetVol20t3945"]);
+                this.SetUpVoltage(cmdDictionary["B"]["SetVol00t1945"]);
+                this.SetUpVoltage(cmdDictionary["B"]["SetVol20t3945"]);
+            }
+            //else
+            //{
+            //    this.SetUpVoltage(cmdDictionary["A"]["SetVol00t1950"]);
+            //    this.SetUpVoltage(cmdDictionary["A"]["SetVol20t3950"]);
+            //    this.SetUpVoltage(cmdDictionary["B"]["SetVol00t1950"]);
+            //    this.SetUpVoltage(cmdDictionary["B"]["SetVol20t3950"]);
+            //}
+
             try
             {
                 this.EnableControl();
@@ -112,6 +134,18 @@ namespace APPLEDIE
             throw new Exception("Electirc Module Remote Control Response Error.");
         }
 
+        private void SetUpVoltage(byte[] cmd)
+        {
+            try
+            {
+                var response = Query(cmd, 200);
+                //if (9 == response.Length)
+                //return;
+                //throw new Exception("Electirc Set voltage Response Error.");
+            }
+            catch
+            { }
+        }
         private void DisableControl()
         {
             var cmd = new byte[] { 0x68, 0x01, 0x01, 0x09, 0x13, 0x40, 0x0C, 0x02, 0x54 };

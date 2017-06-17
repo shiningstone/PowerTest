@@ -67,6 +67,9 @@ namespace PowerTest
             {
                 Logger.action += new Logger.logAction(log => { TB_Log.Text += "\r\n" + log; });
             }
+
+            CB_ElecModuleEnable.Checked = true;
+            RB_PartA.Checked = true;
         }
 
         private void BTN_ComCtrl_Click(object sender, EventArgs e)
@@ -79,9 +82,11 @@ namespace PowerTest
                 }
                 else
                 {
-                    port = new JzhPower(drpComList.SelectedItem.ToString());
+                    string part = RB_PartA.Checked ? "A" : "B";
+                    port = new JzhPower(drpComList.SelectedItem.ToString(), part);
                 }
                 port.Open();
+
                 BTN_ComCtrl.Text = "Close";
             }
             else
@@ -187,8 +192,8 @@ namespace PowerTest
             if (((int)ts.TotalSeconds / OutputInt) > lastOutput || force)
             {
                 lbl.Text = String.Format(
-                    "Test {0} times(send {1} , receive {2}): Total {3} ms",
-                    count, port.GetSendCnt(), port.GetRecvCnt(), ts);
+                    "Test {0} {1} times(send {2} , receive {3}): Total {4} ms",
+                    RB_PartA.Checked?"A":"B", count, port.GetSendCnt(), port.GetRecvCnt(), ts);
 
                 Logger.Show(Logger.Level.Operation, TB_Result.Text);
 
@@ -255,6 +260,12 @@ namespace PowerTest
         };
         private void BTN_StabilityStart_Click(object sender, EventArgs e)
         {
+            if (!CB_ElecModuleEnable.Checked)
+            {
+                MessageBox.Show("ElectricModule should be checked");
+                return;
+            }
+
             int option = CMB_TestType.SelectedIndex;
             int duration = Int32.Parse(TB_Duration.Text);
             bool forceClose = CB_ForceClose.Checked;
