@@ -273,6 +273,7 @@ namespace APPLEDIE
                 //    this.SetUpVoltage(cmdDictionary["B"]["SetVol20t3950"]);
                 //}
 
+                Logger.Show(Logger.Level.Bus, String.Format("SetCurrent: {0}", current));
                 var cmdSet = new byte[][] { cmdDictionary[part]["SetCurrent00to19"], cmdDictionary[part]["SetCurrent20to39"] };
                 byte[] currentPara = new byte[] { 0x00, 0x00, (byte)(current * 10 / 256), (byte)(current * 10 % 256) };
                 foreach (var item in cmdSet)
@@ -291,6 +292,8 @@ namespace APPLEDIE
 
         public void ReadVoltageAndCurrent(out double[] current, out double[] voltage)
         {
+            Logger.Show(Logger.Level.Bus, String.Format("ReadVoltageAndCurrent"));
+
             try
             {
                 this.EnableControl();
@@ -320,6 +323,8 @@ namespace APPLEDIE
 
         private void EnableControl()
         {
+            Logger.Show(Logger.Level.Bus, String.Format("EnableControl"));
+
             var cmd = new byte[] { 0x68, 0x01, 0x01, 0x09, 0x13, 0x40, 0x0C, 0x01, 0x57 };
             var response = Query(cmd, 100);
             if (9 == response.Length)
@@ -328,6 +333,8 @@ namespace APPLEDIE
         }
         private void SetUpVoltage(byte[] cmd)
         {
+            Logger.Show(Logger.Level.Bus, String.Format("SetUpVoltage"));
+
             try
             {
                 var response = Query(cmd, 200);
@@ -340,6 +347,8 @@ namespace APPLEDIE
         }
         private void DisableControl()
         {
+            Logger.Show(Logger.Level.Bus, String.Format("DisableControl"));
+
             var cmd = new byte[] { 0x68, 0x01, 0x01, 0x09, 0x13, 0x40, 0x0C, 0x02, 0x54 };
             var response = Query(cmd, 100);
             if (9 == response.Length)

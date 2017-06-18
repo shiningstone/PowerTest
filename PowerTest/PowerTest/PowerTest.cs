@@ -75,19 +75,6 @@ namespace PowerTest
 
         private bool SendFileRunning = false;
         private bool StabilityTestRunning = false;
-        #region async ui interfaces
-        private void UpdateTestSummary(string str)
-        {
-            if (!SendFileRunning)
-            {
-                TB_Result.Text = str;
-            }
-            if (!StabilityTestRunning)
-            {
-                TB_StabilityResult.Text = str;
-            }
-        }
-        #endregion
         private void BTN_ComCtrl_Click(object sender, EventArgs e)
         {
             if (port == null)
@@ -168,6 +155,7 @@ namespace PowerTest
         private void BTN_Start_Click(object sender, EventArgs e)
         {
             int times = 0;
+            SendFileRunning = true;
 
             if (RB_TestTimes.Checked)
             {
@@ -200,19 +188,30 @@ namespace PowerTest
             BTN_Start.Enabled = true;
         }
         delegate void AsynUpdateUi(string str);
+        private void UpdateResult(string str)
+        {
+            if (SendFileRunning)
+            {
+                TB_Result.Text = str;
+            }
+            else
+            {
+                TB_StabilityResult.Text = str;
+            }
+        }
         private void UpdateUi(string str)
         {
-            Logger.Show(Logger.Level.Operation, str);
+            Logger.Show(Logger.Level.Bus, str);
 
             if (InvokeRequired)
             {
                 this.Invoke(new AsynUpdateUi(delegate(string s) {
-                    TB_Result.Text = s;
+                    UpdateResult(s);
                 }), str);
             }
             else
             {
-                TB_Result.Text = str;
+                UpdateResult(str);
             }
         }
         private int lastUiSummary = 1;
@@ -257,108 +256,29 @@ namespace PowerTest
             TB_StabilityResult.Text = StabilityTest[option] + " Start @ " + start + "(" + forceClose + "," + forceDisconnect + ")";
             Logger.Show(Logger.Level.Operation, TB_StabilityResult.Text);
 
+            Logger.mLevel = Logger.Level.Bus;
+
+            JzhTest aTest = null;
             switch (option)
             {
                 case 0:
-                    cmdCount = SingleCurrentTest(start, duration);
-                    break;
+                    {
+                        aTest = new SingleCurrentTest(port, 4, duration);
+                        break;
+                    }
                 case 1:
-                    cmdCount = MultiCurrentTest(start, duration);
-                    break;
+                    {
+                        double[] tests = new double[] { 1,2,3,4 };
+                        aTest = new MultiCurrentTest(port, tests, duration);
+                        break;
+                    }
             }
+
+            aTest.updateUi = UpdateUi;
+            Thread t = new Thread(new ThreadStart(aTest.Run));
+            t.Start();
 
             ShowResult(TB_StabilityResult, start, cmdCount);
-        }
-        private void SaveData(StreamWriter dat, double[] current, double[] voltage)
-        {
-            string oneshot = "";
-
-            oneshot += "Current: ";
-            for (int i = 0; i < current.Length; i++)
-            {
-                oneshot += current[i].ToString("0.000") + " ";
-            }
-
-            oneshot += "Voltage: ";
-            for (int i = 0; i < voltage.Length; i++)
-            {
-                oneshot += voltage[i].ToString("0.000") + " ";
-            }
-
-            dat.Write(oneshot + "\n");
-            dat.Flush();
-        }
-        private int SingleCurrentTest(DateTime start, int duration, int interval = 100)
-        {
-            StreamWriter dat = new StreamWriter(new FileStream("SingleCurrentTest.dat", FileMode.Append));
-
-            JzhPower jzh = port as JzhPower;
-            double[] current;
-            double[] voltage;
-            int count = 0;
-
-            jzh.SetCurrent(4);
-            count++;
-
-            TimeSpan ts = System.DateTime.Now.Subtract(start);
-            while ((int)ts.TotalMinutes < duration)
-            {
-                if (CB_ForceClose.Checked)
-                {
-                    jzh.Open();
-                    jzh.ReadVoltageAndCurrent(out current, out voltage);
-                    jzh.Close();
-                }
-                else
-                {
-                    jzh.ReadVoltageAndCurrent(out current, out voltage);
-                }
-                SaveData(dat, current, voltage);
-                count++;
-                Thread.Sleep(interval);
-
-                ts = System.DateTime.Now.Subtract(start);
-            }
-
-            return count;
-        }
-        private int MultiCurrentTest(DateTime start, int duration, int interval = 100)
-        {
-            StreamWriter dat = new StreamWriter(new FileStream("MultiCurrentTest.dat", FileMode.Append));
-
-            JzhPower jzh = port as JzhPower;
-            double[] testPoint = new double[4] { 1, 2, 3, 4 };
-            double[] current;
-            double[] voltage;
-            int count = 0;
-
-            for (int i = 0; i < testPoint.Length; i++)
-            {
-                jzh.SetCurrent(testPoint[i]);
-                count++;
-
-                TimeSpan ts = System.DateTime.Now.Subtract(start);
-                while ((int)ts.TotalMinutes < (int)(duration / testPoint.Length))
-                {
-                    if (CB_ForceClose.Checked)
-                    {
-                        jzh.Open();
-                        jzh.ReadVoltageAndCurrent(out current, out voltage);
-                        jzh.Close();
-                    }
-                    else
-                    {
-                        jzh.ReadVoltageAndCurrent(out current, out voltage);
-                    }
-                    SaveData(dat, current, voltage);
-                    count++;
-                    Thread.Sleep(interval);
-
-                    ts = System.DateTime.Now.Subtract(start);
-                }
-            }
-
-            return count;
         }
         #endregion
         private void CB_LogEnable_CheckedChanged(object sender, EventArgs e)
@@ -420,29 +340,32 @@ namespace PowerTest
             return frames[0];
         #endif
         }
-        class SendFile
+        #region test process
+        abstract class LongTermTest
         {
             public delegate void UpdateUi(string str);
             public UpdateUi updateUi;
+            const int UpdateIntval = 5;
+            private int lastUiSummary = 1;
 
-            public string mFile;
-            public int mTimes;
-            public string mMode;
+            public abstract void Prepare();
+            public abstract void SingleRun();
 
-            private Iport mPort;
-            public SendFile(Iport port, string file, int times, string mode)
+            protected Iport mPort;
+            public string mMode;         /*0-count; 1-timer*/
+            public int mTimes;           /*minutes when mode is 1*/
+            public DateTime mStart;             
+
+            protected LongTermTest(Iport port, string mode, int times)
             {
                 mPort = port;
-                mFile = file;
-                mTimes = times;
                 mMode = mode;
+                mTimes = times;
             }
 
-            const int UpdateIntval = 3600;
-            private int lastUiSummary = 1;
-            private bool ShouldUpdate(DateTime cur, DateTime start)
+            private bool ShouldUpdate(DateTime cur)
             {
-                TimeSpan ts = cur.Subtract(start);
+                TimeSpan ts = cur.Subtract(mStart);
 
                 if (((int)ts.TotalSeconds / UpdateIntval) > lastUiSummary)
                 {
@@ -454,7 +377,7 @@ namespace PowerTest
                     return false;
                 }
             }
-            private bool ShouldContinue(int count, DateTime cur, DateTime start)
+            private bool ShouldContinue(int count, DateTime cur)
             {
                 if (mMode.Equals("Times"))
                 {
@@ -462,12 +385,12 @@ namespace PowerTest
                 }
                 else
                 {
-                    return ((int)cur.Subtract(start).TotalMinutes < mTimes);
+                    return ((int)cur.Subtract(mStart).TotalMinutes < mTimes);
                 }
             }
             private string Summary(DateTime start, DateTime end, int count)
             {
-                return String.Format("Send File {0} ms : {1} times(send {2},receive{3})",
+                return String.Format("{0} s : {1} times(send {2},receive{3})",
                     end.Subtract(start).TotalSeconds, count, mPort.GetSendCnt(), mPort.GetRecvCnt());
             }
             public void Run()
@@ -475,31 +398,45 @@ namespace PowerTest
                 lastUiSummary = 1;
 
                 int count = 0;
-                DateTime start = System.DateTime.Now;
+                mStart = System.DateTime.Now;
                 DateTime cur = System.DateTime.Now;
 
-                StreamReader sr = new StreamReader(mFile, Encoding.Default);
+                Prepare();
 
-                while (ShouldContinue(count, cur, start))
+                while (ShouldContinue(count, cur))
                 {
-                    SendFileOnce(sr);
+                    SingleRun();
                     count++;
 
                     cur = System.DateTime.Now;
-                    if (ShouldUpdate(cur, start))
+                    if (ShouldUpdate(cur))
                     {
-                        updateUi(Summary(start, cur, count));
+                        updateUi(Summary(mStart, cur, count));
                     }
                 }
 
-                updateUi(Summary(start, cur, count));
+                updateUi(Summary(mStart, cur, count));
             }
-            private void SendFileOnce(StreamReader sr)
+        }
+        class SendFile : LongTermTest
+        {
+            private string mFile;
+            private StreamReader mSr;
+            public SendFile(Iport port, string file, int times, string mode)
+                : base(port, mode, times)
             {
-                sr.BaseStream.Seek(0, SeekOrigin.Begin);
+                mFile = file;
+            }
+            override public void Prepare()
+            {
+                mSr = new StreamReader(mFile, Encoding.Default);
+            }
+            override public void SingleRun()
+            {
+                mSr.BaseStream.Seek(0, SeekOrigin.Begin);
 
                 String line;
-                while ((line = sr.ReadLine()) != null)
+                while ((line = mSr.ReadLine()) != null)
                 {
                     if (line.Substring(0, 2).Equals("//"))
                     {
@@ -513,6 +450,90 @@ namespace PowerTest
                 }
             }
         }
+        abstract class JzhTest : LongTermTest
+        {
+            protected int mInterval = 0;
+            protected StreamWriter mDatFile = null;
+            protected JzhPower mJzh = null;
+            public JzhTest(Iport port, int duration, int interval = 100)
+                : base(port, "Minute", duration)
+            {
+                mJzh = port as JzhPower;
+            }
+            protected void SaveData(StreamWriter dat, double[] current, double[] voltage)
+            {
+                string oneshot = "";
+
+                oneshot += "Current: ";
+                for (int i = 0; i < current.Length; i++)
+                {
+                    oneshot += current[i].ToString("0.000") + " ";
+                }
+
+                oneshot += "Voltage: ";
+                for (int i = 0; i < voltage.Length; i++)
+                {
+                    oneshot += voltage[i].ToString("0.000") + " ";
+                }
+
+                dat.Write(oneshot + "\n");
+                dat.Flush();
+            }
+        }
+        class SingleCurrentTest : JzhTest
+        {
+            public double mInitVal;
+            public SingleCurrentTest(Iport port, double initVal, int duration, int interval = 100)
+                :base(port, duration, interval)
+            {
+                mInitVal = initVal;
+            }
+            public void SetDatFile(StreamWriter sw)
+            {
+                mDatFile = sw;
+            }
+            public override void Prepare()
+            {
+                if (mDatFile == null)
+                {
+                    mDatFile = new StreamWriter(new FileStream("SingleCurrentTest.dat", FileMode.Append));
+                }
+                mJzh.SetCurrent(mInitVal);
+            }
+            public override void SingleRun()
+            {
+                double[] current;
+                double[] voltage;
+
+                mJzh.ReadVoltageAndCurrent(out current, out voltage);
+                SaveData(mDatFile, current, voltage);
+                Thread.Sleep(mInterval);
+            }
+        }
+        class MultiCurrentTest : JzhTest
+        {
+            protected double[] mTestPoints;
+            public MultiCurrentTest(Iport port, double[] testPoints, int duration, int interval = 100)
+                : base(port, duration, interval)
+            {
+                mTestPoints = testPoints;
+            }
+            public override void Prepare()
+            {
+                mDatFile = new StreamWriter(new FileStream("MultiCurrentTest.dat", FileMode.Append));
+            }
+            public override void SingleRun()
+            {
+                for (int i = 0; i < mTestPoints.Length; i++)
+                {
+                    SingleCurrentTest aPointTest = new SingleCurrentTest(mPort, mTestPoints[i], mTimes/4, mInterval);
+                    aPointTest.updateUi = updateUi;
+                    aPointTest.SetDatFile(mDatFile);
+                    aPointTest.Run();
+                }
+            }
+        }
+        #endregion
         class Util
         {
             static public byte HighByte(int value)
