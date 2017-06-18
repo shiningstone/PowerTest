@@ -65,6 +65,8 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.CMB_TestType = new System.Windows.Forms.ComboBox();
+            this.CMB_LogLevel = new System.Windows.Forms.ComboBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -438,11 +440,31 @@
             this.CMB_TestType.Size = new System.Drawing.Size(121, 21);
             this.CMB_TestType.TabIndex = 0;
             // 
+            // CMB_LogLevel
+            // 
+            this.CMB_LogLevel.FormattingEnabled = true;
+            this.CMB_LogLevel.Location = new System.Drawing.Point(469, 5);
+            this.CMB_LogLevel.Name = "CMB_LogLevel";
+            this.CMB_LogLevel.Size = new System.Drawing.Size(121, 21);
+            this.CMB_LogLevel.TabIndex = 38;
+            this.CMB_LogLevel.SelectedIndexChanged += new System.EventHandler(this.CMB_LogLevel_SelectedIndexChanged);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(416, 11);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(51, 13);
+            this.label9.TabIndex = 39;
+            this.label9.Text = "LogLevel";
+            // 
             // PowerTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(847, 440);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.CMB_LogLevel);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.CB_LogEnable);
             this.Controls.Add(this.TB_Log);
@@ -506,6 +528,8 @@
         private System.Windows.Forms.Label TB_StabilityResult;
         private System.Windows.Forms.RadioButton RB_PartA;
         private System.Windows.Forms.RadioButton RB_PartB;
+        private System.Windows.Forms.ComboBox CMB_LogLevel;
+        private System.Windows.Forms.Label label9;
     }
 }
 
