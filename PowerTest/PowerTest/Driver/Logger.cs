@@ -9,8 +9,10 @@ namespace BIModel
 {
     class Logger
     {
-        public delegate void logAction(string log);
-        public static logAction action;
+        public delegate void UpdateUI(string log);
+        public static UpdateUI updateUI;
+        public delegate void UpdateSummary(string log);
+        public static UpdateUI updateSummary;
         public enum Level
         {
             Error,
@@ -44,9 +46,9 @@ namespace BIModel
                     mLogFile.Flush();
                 }
 
-                if (action!=null)
+                if (updateUI!=null)
                 {
-                    action.Invoke(log);
+                    updateUI.Invoke(log);
                 }
             }
         }

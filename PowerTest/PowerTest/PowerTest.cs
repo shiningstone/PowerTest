@@ -1,4 +1,8 @@
-﻿using System;
+﻿
+//#define rftp
+#define jzh
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,14 +20,9 @@ using APPLEDIE;
 
 namespace PowerTest
 {
+
     public partial class PowerTest : Form
     {
-        enum BoardType {
-            ElecModule,
-            RftpTest,
-        }
-        BoardType gBoard = BoardType.RftpTest;
-
         Iport port = null;
         public PowerTest()
         {
@@ -32,13 +31,13 @@ namespace PowerTest
             string[] ports = SerialPort.GetPortNames();
             foreach (string port in ports)
             {
-                drpComList.Items.Add(port);
+                CMB_ComList.Items.Add(port);
             }
-            drpComList.Items.Add("Mock");
+            CMB_ComList.Items.Add("Mock");
 
-            if (drpComList.Items.Count > 0)
+            if (CMB_ComList.Items.Count > 0)
             {
-                drpComList.SelectedIndex = 0;
+                CMB_ComList.SelectedIndex = 0;
                 BTN_ComCtrl.Enabled = true;
             }
 
@@ -67,25 +66,40 @@ namespace PowerTest
 
             if (CB_LogEnable.Checked)
             {
-                Logger.action += new Logger.logAction(log => { TB_Log.Text += "\r\n" + log; });
+                Logger.updateUI += new Logger.UpdateUI(log => { TB_Log.Text += "\r\n" + log; });
             }
 
             CB_ElecModuleEnable.Checked = true;
             RB_PartA.Checked = true;
         }
 
+        private bool SendFileRunning = false;
+        private bool StabilityTestRunning = false;
+        #region async ui interfaces
+        private void UpdateTestSummary(string str)
+        {
+            if (!SendFileRunning)
+            {
+                TB_Result.Text = str;
+            }
+            if (!StabilityTestRunning)
+            {
+                TB_StabilityResult.Text = str;
+            }
+        }
+        #endregion
         private void BTN_ComCtrl_Click(object sender, EventArgs e)
         {
             if (port == null)
             {
                 if (!CB_ElecModuleEnable.Checked)
                 {
-                    port = Comm.GetComm(drpComList.SelectedItem.ToString(), 115200);
+                    port = Comm.GetComm(CMB_ComList.SelectedItem.ToString(), 115200);
                 }
                 else
                 {
                     string part = RB_PartA.Checked ? "A" : "B";
-                    port = new JzhPower(Comm.GetComm(drpComList.SelectedItem.ToString(), 38400), part);
+                    port = new JzhPower(Comm.GetComm(CMB_ComList.SelectedItem.ToString(), 38400), part);
                 }
                 port.Open();
 
@@ -153,8 +167,6 @@ namespace PowerTest
 
         private void BTN_Start_Click(object sender, EventArgs e)
         {
-            Logger.mLevel = Logger.Level.Operation;
-
             int times = 0;
 
             if (RB_TestTimes.Checked)
@@ -178,82 +190,49 @@ namespace PowerTest
             TB_Result.Text = "Performance @ " + System.DateTime.Now + ", File: " + Path.GetFileName(TB_TestFile.Text);
             Logger.Show(Logger.Level.Operation, TB_Result.Text);
 
-            lastOutput = 1;
-            SendFile(TB_TestFile.Text, times, Properties.Settings.Default.TestMode);
+            Logger.mLevel = Logger.Level.Operation;
+            SendFile aTransmission = new SendFile(port, TB_TestFile.Text, times, Properties.Settings.Default.TestMode);
+            aTransmission.updateUi = UpdateUi;
+            Thread t = new Thread(new ThreadStart(aTransmission.Run));
+            t.Start();
+            //aTransmission.Run();
 
             BTN_Start.Enabled = true;
         }
-        private int lastOutput = 1;
+        delegate void AsynUpdateUi(string str);
+        private void UpdateUi(string str)
+        {
+            Logger.Show(Logger.Level.Operation, str);
+
+            if (InvokeRequired)
+            {
+                this.Invoke(new AsynUpdateUi(delegate(string s) {
+                    TB_Result.Text = s;
+                }), str);
+            }
+            else
+            {
+                TB_Result.Text = str;
+            }
+        }
+        private int lastUiSummary = 1;
         private void ShowResult(Label lbl, DateTime start, int count, bool force = true)
         {
-            const int OutputInt = 600;
+            const int UpdateIntval = 600;
 
             DateTime stop = System.DateTime.Now;
             TimeSpan ts = stop.Subtract(start);
 
-            if (((int)ts.TotalSeconds / OutputInt) > lastOutput || force)
+            if (((int)ts.TotalSeconds / UpdateIntval) > lastUiSummary || force)
             {
                 lbl.Text = String.Format(
                     "Test {0} {1} times(send {2} , receive {3}): Total {4} ms",
                     RB_PartA.Checked?"A":"B", count, port.GetSendCnt(), port.GetRecvCnt(), ts);
 
-                Logger.Show(Logger.Level.Operation, TB_Result.Text);
+                Logger.Show(Logger.Level.Operation, lbl.Text);
 
-                lastOutput = (int)ts.TotalSeconds / OutputInt;
+                lastUiSummary = (int)ts.TotalSeconds / UpdateIntval;
             }
-        }
-        private void SendFileOnce(StreamReader sr)
-        {
-            sr.BaseStream.Seek(0, SeekOrigin.Begin);
-
-            String line;
-            while ((line = sr.ReadLine()) != null)
-            {
-                if (line.Substring(0, 2).Equals("//"))
-                {
-                    String delay = line.Split(' ')[1];
-                    Thread.Sleep(Int32.Parse(delay));
-                }
-                else
-                {
-                    port.Query(Frame(_HexStringToBytes(line.Replace(" ", ""))));
-                }
-            }
-        }
-        private void SendFile(string file, int times, string mode)
-        {
-            int count = 0;
-            DateTime start = System.DateTime.Now;
-
-            StreamReader sr = new StreamReader(file, Encoding.Default);
-
-            if (mode.Equals("Times"))
-            {
-                while (count < times)
-                {
-                    SendFileOnce(sr);
-                    count++;
-                }
-            }
-            else
-            {
-                while (true)
-                {
-                    TimeSpan ts = System.DateTime.Now.Subtract(start);
-
-                    if ((int)ts.TotalMinutes < times)
-                    {
-                        SendFileOnce(sr);
-                        count++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-
-            ShowResult(TB_Result, start, count);
         }
         #region Stability Test
         string[] StabilityTest = new string[] {
@@ -386,66 +365,154 @@ namespace PowerTest
         {
             if (CB_LogEnable.Checked)
             {
-                Logger.action += new Logger.logAction(log => { TB_Log.Text += "\r\n" + log; });
+                Logger.updateUI += new Logger.UpdateUI(log => { TB_Log.Text += "\r\n" + log; });
             }
             else
             {
                 TB_Log.Text = "";
-                Logger.action = null;
+                Logger.updateUI = null;
             }
         }
         private void CB_ElecModuleEnable_CheckedChanged(object sender, EventArgs e)
         {
 
         }
-        /* this function is used for rftp board*/
-        private byte[] Frame(byte[] cmd)
+        public static byte[] Frame(byte[] cmd)
         {
-            if (gBoard == BoardType.ElecModule)
+        #if jzh
+            return cmd;
+        #else
+            const int USB_BUFF = 511;              /* depends on remote device */
+            List<byte[]> frames = new List<byte[]>();
+
+            int totalLen = cmd.Length + 2;/*add frame length field*/
+            int i = 0;
+            int fragmentLen = 0;          /* length of each frame */
+            int loadLen = 0;              /* total length of loaded bytes*/
+
+            fragmentLen = totalLen > USB_BUFF ? USB_BUFF : totalLen;
+            byte[] frame = new byte[fragmentLen];
+            frame[0] = Util.HighByte(cmd.Length + 2);
+            frame[1] = Util.LowByte(cmd.Length + 2);
+            i = 0;
+            while (i < fragmentLen - 2)
             {
-                return cmd;
+                frame[2 + i] = cmd[i];
+                i++;
             }
-            else
+            frames.Add(frame);
+            loadLen += fragmentLen;
+
+            while (loadLen < totalLen)
             {
-                const int USB_BUFF = 511;              /* depends on remote device */
-                List<byte[]> frames = new List<byte[]>();
-
-                int totalLen = cmd.Length + 2;/*add frame length field*/
-                int i = 0;
-                int fragmentLen = 0;          /* length of each frame */
-                int loadLen = 0;              /* total length of loaded bytes*/
-
-                fragmentLen = totalLen > USB_BUFF ? USB_BUFF : totalLen;
-                byte[] frame = new byte[fragmentLen];
-                frame[0] = Util.HighByte(cmd.Length + 2);
-                frame[1] = Util.LowByte(cmd.Length + 2);
+                fragmentLen = (totalLen - loadLen) > USB_BUFF ? USB_BUFF : totalLen - loadLen;
+                byte[] frame2 = new byte[fragmentLen];
                 i = 0;
-                while (i < fragmentLen - 2)
+                while (i < fragmentLen)
                 {
-                    frame[2 + i] = cmd[i];
+                    frame2[i] = cmd[loadLen - 2 + i];
                     i++;
                 }
-                frames.Add(frame);
+                frames.Add(frame2);
                 loadLen += fragmentLen;
+            }
 
-                while (loadLen < totalLen)
+            return frames[0];
+        #endif
+        }
+        class SendFile
+        {
+            public delegate void UpdateUi(string str);
+            public UpdateUi updateUi;
+
+            public string mFile;
+            public int mTimes;
+            public string mMode;
+
+            private Iport mPort;
+            public SendFile(Iport port, string file, int times, string mode)
+            {
+                mPort = port;
+                mFile = file;
+                mTimes = times;
+                mMode = mode;
+            }
+
+            const int UpdateIntval = 3600;
+            private int lastUiSummary = 1;
+            private bool ShouldUpdate(DateTime cur, DateTime start)
+            {
+                TimeSpan ts = cur.Subtract(start);
+
+                if (((int)ts.TotalSeconds / UpdateIntval) > lastUiSummary)
                 {
-                    fragmentLen = (totalLen - loadLen) > USB_BUFF ? USB_BUFF : totalLen - loadLen;
-                    byte[] frame2 = new byte[fragmentLen];
-                    i = 0;
-                    while (i < fragmentLen)
+                    lastUiSummary = (int)ts.TotalSeconds / UpdateIntval;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            private bool ShouldContinue(int count, DateTime cur, DateTime start)
+            {
+                if (mMode.Equals("Times"))
+                {
+                    return (count < mTimes);
+                }
+                else
+                {
+                    return ((int)cur.Subtract(start).TotalMinutes < mTimes);
+                }
+            }
+            private string Summary(DateTime start, DateTime end, int count)
+            {
+                return String.Format("Send File {0} ms : {1} times(send {2},receive{3})",
+                    end.Subtract(start).TotalSeconds, count, mPort.GetSendCnt(), mPort.GetRecvCnt());
+            }
+            public void Run()
+            {
+                lastUiSummary = 1;
+
+                int count = 0;
+                DateTime start = System.DateTime.Now;
+                DateTime cur = System.DateTime.Now;
+
+                StreamReader sr = new StreamReader(mFile, Encoding.Default);
+
+                while (ShouldContinue(count, cur, start))
+                {
+                    SendFileOnce(sr);
+                    count++;
+
+                    cur = System.DateTime.Now;
+                    if (ShouldUpdate(cur, start))
                     {
-                        frame2[i] = cmd[loadLen - 2 + i];
-                        i++;
+                        updateUi(Summary(start, cur, count));
                     }
-                    frames.Add(frame2);
-                    loadLen += fragmentLen;
                 }
 
-                return frames[0];
+                updateUi(Summary(start, cur, count));
+            }
+            private void SendFileOnce(StreamReader sr)
+            {
+                sr.BaseStream.Seek(0, SeekOrigin.Begin);
+
+                String line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if (line.Substring(0, 2).Equals("//"))
+                    {
+                        String delay = line.Split(' ')[1];
+                        Thread.Sleep(Int32.Parse(delay));
+                    }
+                    else
+                    {
+                        mPort.Query(Frame(_HexStringToBytes(line.Replace(" ", ""))));
+                    }
+                }
             }
         }
-
         class Util
         {
             static public byte HighByte(int value)
