@@ -103,8 +103,8 @@ namespace PowerTest
             CMB_LogLevel.Items.Add("Operation");
             CMB_LogLevel.Items.Add("Bus");
             CMB_LogLevel.Items.Add("Command");
-            CMB_LogLevel.SelectedIndex = 0;
-            Logger.mLevel = Logger.Level.Operation;
+            CMB_LogLevel.SelectedIndex = 2;
+            Logger.mLevel = Logger.Level.Command;
 
             /*Single Command Test*/
             if (TB_Cmd.Text.Length == 0)
@@ -123,6 +123,7 @@ namespace PowerTest
                 RB_TestMinutes.Checked = true;
             }
             /*Stability Test*/
+            string[] StabilityTest = JzhTest.GetAllTests();
             for (int i = 0; i < StabilityTest.Length; i++)
             {
                 CMB_TestType.Items.Add(StabilityTest[i]);
@@ -178,8 +179,19 @@ namespace PowerTest
             Properties.Settings.Default.DefaultCmd = TB_Cmd.Text;
             Properties.Settings.Default.Save();
 
+            int forceSleep = 0;
+            try
+            {
+                forceSleep = Int32.Parse(TB_Sleep.Text);
+            }
+            catch
+            { }
+
             byte[] cmd = Util.HexStringToBytes(TB_Cmd.Text.Replace(" ", ""));
-            byte[] rsp = port.Query(Util.Frame(cmd));
+
+            BTN_Send.Enabled = false;
+            byte[] rsp = port.Query(Util.Frame(cmd), forceSleep);
+            BTN_Send.Enabled = true;
 
             string output = BitConverter.ToString(rsp).Replace("-", " ");
             TB_Rsp.Text = output;
@@ -228,16 +240,12 @@ namespace PowerTest
             Logger.Show(Logger.Level.Operation, TB_Result.Text);
 
             //Logger.mLevel = Logger.Level.Operation;
-            SendFile aTransmission = new SendFile(port, TB_TestFile.Text, times, Properties.Settings.Default.TestMode);
+            SendFile aTransmission = new SendFile(port, TB_TestFile.Text, times, Properties.Settings.Default.TestMode, CB_LogFileEnable.Checked);
             aTransmission.updateUi = UpdateUi;
             aTransmission.taskDone = TaskDone;
             Thread t = new Thread(new ThreadStart(aTransmission.Run));
             t.Start();
         }
-        string[] StabilityTest = new string[] {
-            "SingleCurrent",
-            "MultiCurrent",
-        };
         private void BTN_StabilityStart_Click(object sender, EventArgs e)
         {
             if (!CB_ElecModuleEnable.Checked)
@@ -259,13 +267,13 @@ namespace PowerTest
             {
                 case 0:
                     {
-                        aTest = new SingleCurrentTest(port, 2, duration);
+                        aTest = new SingleCurrentTest(port, 2000, duration, 1000, CB_LogFileEnable.Checked);
                         break;
                     }
                 case 1:
                     {
-                        double[] tests = new double[] { 0.5, 1, 1.5, 2 };
-                        aTest = new MultiCurrentTest(port, tests, duration);
+                        double[] tests = new double[] { 500, 1000, 1500, 2000 };
+                        aTest = new MultiCurrentTest(port, tests, duration, 1000, CB_LogFileEnable.Checked);
                         break;
                     }
             }

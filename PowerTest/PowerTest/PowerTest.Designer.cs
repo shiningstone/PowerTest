@@ -67,7 +67,11 @@
             this.CMB_TestType = new System.Windows.Forms.ComboBox();
             this.CMB_LogLevel = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.TB_Sleep = new System.Windows.Forms.TextBox();
+            this.CB_LogFileEnable = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.SuspendLayout();
@@ -125,14 +129,14 @@
             this.TB_Cmd.Name = "TB_Cmd";
             this.TB_Cmd.Size = new System.Drawing.Size(278, 20);
             this.TB_Cmd.TabIndex = 19;
-            this.TB_Cmd.Text = "01 FA 00 00 00 00 00 00 00 FB";
+            this.TB_Cmd.Text = "68 01 01 08 10 30 00 28 ";
             // 
             // TB_Rsp
             // 
             this.TB_Rsp.Location = new System.Drawing.Point(68, 132);
             this.TB_Rsp.Name = "TB_Rsp";
             this.TB_Rsp.ReadOnly = true;
-            this.TB_Rsp.Size = new System.Drawing.Size(278, 20);
+            this.TB_Rsp.Size = new System.Drawing.Size(243, 20);
             this.TB_Rsp.TabIndex = 20;
             // 
             // BTN_Send
@@ -249,6 +253,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Location = new System.Drawing.Point(3, 92);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(407, 84);
@@ -458,11 +463,43 @@
             this.label9.TabIndex = 39;
             this.label9.Text = "LogLevel";
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(310, 45);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(51, 13);
+            this.label10.TabIndex = 40;
+            this.label10.Text = "sleep(ms)";
+            // 
+            // TB_Sleep
+            // 
+            this.TB_Sleep.AcceptsReturn = true;
+            this.TB_Sleep.Location = new System.Drawing.Point(367, 132);
+            this.TB_Sleep.Name = "TB_Sleep";
+            this.TB_Sleep.Size = new System.Drawing.Size(37, 20);
+            this.TB_Sleep.TabIndex = 40;
+            this.TB_Sleep.Text = "0";
+            // 
+            // CB_LogFileEnable
+            // 
+            this.CB_LogFileEnable.AutoSize = true;
+            this.CB_LogFileEnable.Checked = true;
+            this.CB_LogFileEnable.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CB_LogFileEnable.Location = new System.Drawing.Point(605, 8);
+            this.CB_LogFileEnable.Name = "CB_LogFileEnable";
+            this.CB_LogFileEnable.Size = new System.Drawing.Size(99, 17);
+            this.CB_LogFileEnable.TabIndex = 37;
+            this.CB_LogFileEnable.Text = "Log File Enable";
+            this.CB_LogFileEnable.UseVisualStyleBackColor = true;
+            // 
             // PowerTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(847, 440);
+            this.Controls.Add(this.CB_LogFileEnable);
+            this.Controls.Add(this.TB_Sleep);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.CMB_LogLevel);
             this.Controls.Add(this.groupBox4);
@@ -480,6 +517,8 @@
             this.Text = "Power Test";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -530,6 +569,9 @@
         private System.Windows.Forms.RadioButton RB_PartB;
         private System.Windows.Forms.ComboBox CMB_LogLevel;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox TB_Sleep;
+        private System.Windows.Forms.CheckBox CB_LogFileEnable;
     }
 }
 
