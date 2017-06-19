@@ -36,7 +36,7 @@ namespace PowerTest.Test
         }
         public static byte[] Frame(byte[] cmd)
         {
-#if jzh
+#if true
                 return cmd;
 #else
             const int USB_BUFF = 511;              /* depends on remote device */

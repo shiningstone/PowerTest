@@ -323,6 +323,7 @@ namespace APPLEDIE
 
         private void EnableControl()
         {
+#if false
             Logger.Show(Logger.Level.Bus, String.Format("EnableControl"));
 
             var cmd = new byte[] { 0x68, 0x01, 0x01, 0x09, 0x13, 0x40, 0x0C, 0x01, 0x57 };
@@ -330,6 +331,7 @@ namespace APPLEDIE
             if (9 == response.Length)
                 return;
             throw new Exception("Electirc Module Remote Control Response Error.");
+#endif
         }
         private void SetUpVoltage(byte[] cmd)
         {
@@ -337,6 +339,10 @@ namespace APPLEDIE
 
             try
             {
+                cmd[3] = 0x0a;
+                byte sc = GetCheckSum(cmd, cmd.Length - 1);
+                cmd[cmd.Length - 1] = sc;
+
                 var response = Query(cmd, 200);
                 //if (9 == response.Length)
                 //return;
@@ -347,6 +353,7 @@ namespace APPLEDIE
         }
         private void DisableControl()
         {
+#if false
             Logger.Show(Logger.Level.Bus, String.Format("DisableControl"));
 
             var cmd = new byte[] { 0x68, 0x01, 0x01, 0x09, 0x13, 0x40, 0x0C, 0x02, 0x54 };
@@ -354,6 +361,7 @@ namespace APPLEDIE
             if (9 == response.Length)
                 return;
             throw new Exception("Electirc Module Disable Control Response Error.");
+#endif
         }
 
 
