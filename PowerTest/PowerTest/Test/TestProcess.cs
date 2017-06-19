@@ -101,6 +101,7 @@ class SendFile : LongTermTest
     override public void Prepare()
     {
         mSr = new StreamReader(mFile, Encoding.Default);
+        Logger.SetFile("SendFile_" + mStart.ToString("yyMMddHHmmss"));
     }
     override public void SingleRun()
     {
@@ -126,7 +127,7 @@ abstract class JzhTest : LongTermTest
     protected int mInterval = 0;
     protected StreamWriter mDatFile = null;
     protected JzhPower mJzh = null;
-    public JzhTest(Iport port, int duration, int interval = 100)
+    public JzhTest(Iport port, int duration, int interval = 1000)
         : base(port, "Minute", duration)
     {
         mJzh = port as JzhPower;
@@ -154,7 +155,7 @@ abstract class JzhTest : LongTermTest
 class SingleCurrentTest : JzhTest
 {
     public double mInitVal;
-    public SingleCurrentTest(Iport port, double initVal, int duration, int interval = 100)
+    public SingleCurrentTest(Iport port, double initVal, int duration, int interval = 1000)
         : base(port, duration, interval)
     {
         mInitVal = initVal;
@@ -167,7 +168,8 @@ class SingleCurrentTest : JzhTest
     {
         if (mDatFile == null)
         {
-            mDatFile = new StreamWriter(new FileStream("SingleCurrentTest.dat", FileMode.Append));
+            mDatFile = new StreamWriter(new FileStream("SingleCurrentTest_" + mStart.ToString("yyMMddHHmmss") + ".dat", FileMode.Append));
+            Logger.SetFile("SingleCurrentTest_" + mStart.ToString("yyMMddHHmmss"));
         }
         mJzh.SetCurrent(mInitVal);
     }
@@ -184,14 +186,15 @@ class SingleCurrentTest : JzhTest
 class MultiCurrentTest : JzhTest
 {
     protected double[] mTestPoints;
-    public MultiCurrentTest(Iport port, double[] testPoints, int duration, int interval = 100)
+    public MultiCurrentTest(Iport port, double[] testPoints, int duration, int interval = 1000)
         : base(port, duration, interval)
     {
         mTestPoints = testPoints;
     }
     public override void Prepare()
     {
-        mDatFile = new StreamWriter(new FileStream("MultiCurrentTest.dat", FileMode.Append));
+        mDatFile = new StreamWriter(new FileStream("MultiCurrentTest_" + mStart.ToString("yyMMddHHmmss") + ".dat", FileMode.Append));
+        Logger.SetFile("MultiCurrentTest_" + mStart.ToString("yyMMddHHmmss"));
     }
     public override void SingleRun()
     {

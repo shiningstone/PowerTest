@@ -227,7 +227,7 @@ namespace PowerTest
             TB_Result.Text = "Performance @ " + System.DateTime.Now + ", File: " + Path.GetFileName(TB_TestFile.Text);
             Logger.Show(Logger.Level.Operation, TB_Result.Text);
 
-            Logger.mLevel = Logger.Level.Operation;
+            //Logger.mLevel = Logger.Level.Operation;
             SendFile aTransmission = new SendFile(port, TB_TestFile.Text, times, Properties.Settings.Default.TestMode);
             aTransmission.updateUi = UpdateUi;
             aTransmission.taskDone = TaskDone;
@@ -259,12 +259,12 @@ namespace PowerTest
             {
                 case 0:
                     {
-                        aTest = new SingleCurrentTest(port, 4, duration);
+                        aTest = new SingleCurrentTest(port, 2, duration);
                         break;
                     }
                 case 1:
                     {
-                        double[] tests = new double[] { 1,2,3,4 };
+                        double[] tests = new double[] { 0.5, 1, 1.5, 2 };
                         aTest = new MultiCurrentTest(port, tests, duration);
                         break;
                     }
