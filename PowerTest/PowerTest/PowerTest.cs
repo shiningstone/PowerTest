@@ -17,7 +17,6 @@ using BIModel;
 using System.Threading;
 using System.IO;
 using APPLEDIE;
-using PowerTest.Test;
 
 namespace PowerTest
 {
@@ -313,6 +312,27 @@ namespace PowerTest
                     Logger.mLevel = Logger.Level.Command;
                     break;
             }
+        }
+
+        private void BTN_Temp_Click(object sender, EventArgs e)
+        {
+            JzhPower jzh = port as JzhPower;
+
+            int[] chnl = new int[] { 1 };
+            string[] str = new string[40];
+            for (int i = 0; i < str.Length; i++)
+            {
+                str[i] = "0";
+            }
+            for (int i=0;i<chnl.Length;i++)
+            {
+                if (i == chnl[i])
+                {
+                    str[i] = "1";
+                }
+            }
+
+            jzh.SetCurrentChannels(1000, str);
         }
     }
 }

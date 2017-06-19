@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PowerTest.Test
+namespace APPLEDIE
 {
     class Util
     {
@@ -18,6 +18,46 @@ namespace PowerTest.Test
             return (byte)((value & 0x00ff));
         }
 
+        public class BitsArray
+        {
+            public byte[] mMap = new byte[4];
+            public void Set(int[] bits)
+            {
+                for (int i = 0; i < bits.Length; i++)
+                {
+                    Set(bits[i]);
+                }
+            }
+            public void Clr(int[] bits)
+            {
+                for (int i = 0; i < bits.Length; i++)
+                {
+                    Clr(bits[i]);
+                }
+            }
+            public void Set(int bit)
+            {
+                if (bit < 20)
+                {
+                    mMap[3-bit/8] |= (byte)(1 << bit % 8);
+                }
+                else
+                {
+                    throw new Exception("BitsArray : error range " + bit.ToString() + ", should between 0-19");
+                }
+            }
+            public void Clr(int bit)
+            {
+                if (bit < 20)
+                {
+                    mMap[3 - bit / 8] &= (byte)(~(1 << bit % 8));
+                }
+                else
+                {
+                    throw new Exception("BitsArray : error range " + bit.ToString() + ", should between 0-19");
+                }
+            }
+        }
         public static byte[] HexStringToBytes(string hexString)
         {
             try

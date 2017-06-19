@@ -283,6 +283,21 @@ namespace APPLEDIE
                         cmd.InsertRange(cmd.Count - 5, currentPara);
                     Query(cmd.ToArray(), 100);
                 }
+
+                if (part.Equals("A"))
+                {
+                    for (int i = 0; i < 40; i++)
+                    {
+                        mCurrents[i] = current;
+                    }
+                }
+                else
+                {
+                    for (int i = 40; i < 80; i++)
+                    {
+                        mCurrents[i] = current;
+                    }
+                }
             }
             finally
             {
@@ -364,7 +379,54 @@ namespace APPLEDIE
 #endif
         }
 
+        protected double[] mCurrents = new double[80];
 
+        public void SetCurrentChannels(double current, string[] location)
+        {
+            Util.BitsArray map = new Util.BitsArray();
+            for (int i = 0; i < location.Length; i++)
+            {
+                if (location[i].Equals(1))
+                {
+                    map.Set(i);
+                }
+            }
+
+            /*command*/
+            byte[] header = new byte[]{ 0x68, 0x01, 0x01, 0x5D, 0x13, 0x40, 0x00 };
+            List<byte> cmd = header.ToList();
+
+            for (int group = 0; group < 2; group++)
+            {
+                /*group*/
+                int partIdx = part.Equals("A") ? 0 : 1;
+                cmd.Add((byte)(partIdx*2 + group));
+
+                /*currents*/
+                byte[] data = new byte[] { 0x00, 0x00, (byte)(current * 10 / 256), (byte)(current * 10 % 256) };
+                for (int chnl = 0; chnl < 20; chnl++)
+                {
+                    if (location[group*20 + chnl].Equals("1"))
+                    {
+                        cmd.InsertRange(cmd.Count, data);
+                    }
+                    else
+                    {
+                        byte[] prevSetting = new byte[] { 0x00, 0x00, (byte)(mCurrents[partIdx*40 + group*20 + chnl] * 10 / 256), (byte)(mCurrents[partIdx * 40 + group * 20 + chnl] * 10 % 256) };
+                        cmd.InsertRange(cmd.Count, data);
+                    }
+                }
+
+                /*flags*/
+                cmd.InsertRange(cmd.Count, map.mMap);
+
+                /*cs*/
+                cmd.Add(GetCheckSum(cmd.ToArray(), cmd.Count));
+
+                /*Send*/
+                Query(cmd.ToArray(), 100);
+            }
+        }
         public void SetCurPart(double current, string[] location)
         {
             string[] hexlocstr = new string[6];
@@ -374,13 +436,13 @@ namespace APPLEDIE
                 this.EnableControl();
                 if (part == "A")
                 {
-                    cmdDictionary[part]["SetCurPart20to39"] = new byte[] { 0x68, 0x01, 0x01, 0x5D, 0x13, 0x40, 0x00, 0x00, strToToHexByte(hexlocstr[2])[0], strToToHexByte(hexlocstr[1])[0], strToToHexByte(hexlocstr[0])[0] };
-                    cmdDictionary[part]["SetCurPart00to19"] = new byte[] { 0x68, 0x01, 0x01, 0x5D, 0x13, 0x40, 0x00, 0x01, strToToHexByte(hexlocstr[5])[0], strToToHexByte(hexlocstr[4])[0], strToToHexByte(hexlocstr[3])[0] };
+                    cmdDictionary[part]["SetCurPart20to39"] = new byte[] { 0x68, 0x01, 0x01, 0x5D, 0x13, 0x40, 0x00, 0x00, /*FLAG*/0x00, strToToHexByte(hexlocstr[2])[0], strToToHexByte(hexlocstr[1])[0], strToToHexByte(hexlocstr[0])[0] };
+                    cmdDictionary[part]["SetCurPart00to19"] = new byte[] { 0x68, 0x01, 0x01, 0x5D, 0x13, 0x40, 0x00, 0x01, /*FLAG*/0x00, strToToHexByte(hexlocstr[5])[0], strToToHexByte(hexlocstr[4])[0], strToToHexByte(hexlocstr[3])[0] };
                 }
                 else
                 {
-                    cmdDictionary[part]["SetCurPart20to39"] = new byte[] { 0x68, 0x01, 0x01, 0x5D, 0x13, 0x40, 0x00, 0x02, strToToHexByte(hexlocstr[2])[0], strToToHexByte(hexlocstr[1])[0], strToToHexByte(hexlocstr[0])[0] };
-                    cmdDictionary[part]["SetCurPart00to19"] = new byte[] { 0x68, 0x01, 0x01, 0x5D, 0x13, 0x40, 0x00, 0x03, strToToHexByte(hexlocstr[5])[0], strToToHexByte(hexlocstr[4])[0], strToToHexByte(hexlocstr[3])[0] };
+                    cmdDictionary[part]["SetCurPart20to39"] = new byte[] { 0x68, 0x01, 0x01, 0x5D, 0x13, 0x40, 0x00, 0x02, /*FLAG*/0x00, strToToHexByte(hexlocstr[2])[0], strToToHexByte(hexlocstr[1])[0], strToToHexByte(hexlocstr[0])[0] };
+                    cmdDictionary[part]["SetCurPart00to19"] = new byte[] { 0x68, 0x01, 0x01, 0x5D, 0x13, 0x40, 0x00, 0x03, /*FLAG*/0x00, strToToHexByte(hexlocstr[5])[0], strToToHexByte(hexlocstr[4])[0], strToToHexByte(hexlocstr[3])[0] };
                 }
                 var cmdSet = new byte[][] { cmdDictionary[part]["SetCurPart20to39"], cmdDictionary[part]["SetCurPart00to19"] };
                 byte[] currentPara = new byte[] { 0x00, 0x00, (byte)(current * 10 / 256), (byte)(current * 10 % 256) };

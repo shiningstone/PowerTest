@@ -6,7 +6,6 @@ using System.Threading;
 
 using APPLEDIE;
 using BIModel;
-using PowerTest.Test;
 
 abstract class LongTermTest
 {
@@ -249,14 +248,33 @@ class MultiCurrentTest : JzhTest
         {
             mDatFile = sw;
         }
+        string[] GetChnl(int chnl)
+        {
+            string[] str = new string[40];
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (i == chnl)
+                {
+                    str[i] = "1";
+                }
+                else
+                {
+                    str[i] = "0";
+                }
+            }
+
+            return str;
+        }
         public override void SingleRun()
         {
-            double[] current;
-            double[] voltage;
-
-            mJzh.ReadVoltageAndCurrent(out current, out voltage);
-            SaveData(mDatFile, current, voltage);
-            Thread.Sleep(mInterval);
+            double[] currents = new double[] { 500,1000,1500,2000 };
+            for (int chnl=0;chnl<40; chnl++)
+            {
+                for (int testPoint = 0; testPoint < currents.Length; testPoint++)
+                {
+                    mJzh.SetCurrentChannels(currents[testPoint], GetChnl(chnl));
+                }
+            }
         }
     }
 }

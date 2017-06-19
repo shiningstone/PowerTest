@@ -59,7 +59,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Test\TestProcess.cs" />
-    <Compile Include="Test\Util.cs" />
+    <Compile Include="Driver\Util.cs" />
     <EmbeddedResource Include="PowerTest.resx">
       <DependentUpon>PowerTest.cs</DependentUpon>
     </EmbeddedResource>
