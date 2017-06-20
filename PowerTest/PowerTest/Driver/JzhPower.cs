@@ -81,7 +81,7 @@ namespace APPLEDIE
         }
 
         protected Comm com = null;
-        protected string part = null;
+        public string part = null;
         public JzhPower()
         { }
         public JzhPower(int floor, int num)

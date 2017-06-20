@@ -102,8 +102,8 @@ namespace PowerTest
             CMB_LogLevel.Items.Add("Operation");
             CMB_LogLevel.Items.Add("Bus");
             CMB_LogLevel.Items.Add("Command");
-            CMB_LogLevel.SelectedIndex = 2;
-            Logger.mLevel = Logger.Level.Command;
+            CMB_LogLevel.SelectedIndex = 0;
+            Logger.mLevel = Logger.Level.Operation;
 
             /*Single Command Test*/
             if (TB_Cmd.Text.Length == 0)

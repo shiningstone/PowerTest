@@ -171,11 +171,45 @@ abstract class JzhTest : LongTermTest
             }
         }
     }
+    private double[] prevCurrents = null;
+    private double[] prevVoltages = null;
+    private bool IsValidData(double[] current, double[] voltage)
+    {
+        if (prevCurrents == null)
+        {
+            prevCurrents = current;
+            prevVoltages = voltage;
+
+            return true;
+        }
+        else
+        {
+            for (int i = 0; i < current.Length; i++)
+            {
+                if (current[i] != prevCurrents[i])
+                {
+                    return false;
+                }
+            }
+            for (int i = 0; i < voltage.Length; i++)
+            {
+                if (voltage[i] != prevVoltages[i])
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
     protected void SaveData(StreamWriter dat, double[] current, double[] voltage)
     {
-        string oneshot = "";
+        if (IsValidData(current, voltage))
+        {
 
-        oneshot += "Current: ";
+        }
+
+        string oneshot = "Current: ";
         for (int i = 0; i < current.Length; i++)
         {
             oneshot += current[i].ToString("0.000") + " ";
@@ -203,18 +237,39 @@ class SingleCurrentTest : JzhTest
     {
         mDatFile = sw;
     }
+    protected string mPart = "A";
     public override void Prepare()
     {
         base.Prepare();
+
+        mJzh.part = "A";
+        mPart = mJzh.part;
+        mJzh.SetCurrent(mInitVal);
+
+        mJzh.part = "B";
+        mPart = mJzh.part;
         mJzh.SetCurrent(mInitVal);
     }
     public override void SingleRun()
     {
+        double[] currents = new double[80];
+        double[] voltages = new double[80];
+
         double[] current;
         double[] voltage;
 
+        mJzh.part = "A";
         mJzh.ReadVoltageAndCurrent(out current, out voltage);
-        SaveData(mDatFile, current, voltage);
+        current.CopyTo(currents, 0);
+        voltage.CopyTo(voltages, 0);
+
+        mJzh.part = "B";
+        mJzh.ReadVoltageAndCurrent(out current, out voltage);
+        current.CopyTo(currents, 40);
+        voltage.CopyTo(voltages, 40);
+
+        SaveData(mDatFile, currents, voltages);
+
         Thread.Sleep(mInterval);
     }
 }
