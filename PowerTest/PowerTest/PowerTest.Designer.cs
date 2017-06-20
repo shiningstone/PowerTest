@@ -74,6 +74,10 @@
             this.label11 = new System.Windows.Forms.Label();
             this.TB_MaxCurrent = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
+            this.TB_DbgChnl = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.TB_DbgCurrent = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -364,7 +368,6 @@
             this.groupBox4.Controls.Add(this.label12);
             this.groupBox4.Controls.Add(this.TB_MaxCurrent);
             this.groupBox4.Controls.Add(this.label11);
-            this.groupBox4.Controls.Add(this.BTN_Temp);
             this.groupBox4.Controls.Add(this.TB_StabilityResult);
             this.groupBox4.Controls.Add(this.BTN_StabilityStart);
             this.groupBox4.Controls.Add(this.CB_ForceDisconnect);
@@ -383,7 +386,7 @@
             // 
             // BTN_Temp
             // 
-            this.BTN_Temp.Location = new System.Drawing.Point(314, 19);
+            this.BTN_Temp.Location = new System.Drawing.Point(704, 395);
             this.BTN_Temp.Name = "BTN_Temp";
             this.BTN_Temp.Size = new System.Drawing.Size(75, 23);
             this.BTN_Temp.TabIndex = 41;
@@ -537,15 +540,52 @@
             this.label12.TabIndex = 45;
             this.label12.Text = "mA";
             // 
+            // TB_DbgChnl
+            // 
+            this.TB_DbgChnl.Location = new System.Drawing.Point(569, 397);
+            this.TB_DbgChnl.Name = "TB_DbgChnl";
+            this.TB_DbgChnl.Size = new System.Drawing.Size(34, 20);
+            this.TB_DbgChnl.TabIndex = 46;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(520, 403);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(46, 13);
+            this.label13.TabIndex = 47;
+            this.label13.Text = "Channel";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(609, 403);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(41, 13);
+            this.label14.TabIndex = 48;
+            this.label14.Text = "Current";
+            // 
+            // TB_DbgCurrent
+            // 
+            this.TB_DbgCurrent.Location = new System.Drawing.Point(656, 397);
+            this.TB_DbgCurrent.Name = "TB_DbgCurrent";
+            this.TB_DbgCurrent.Size = new System.Drawing.Size(34, 20);
+            this.TB_DbgCurrent.TabIndex = 49;
+            // 
             // PowerTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(847, 440);
+            this.Controls.Add(this.TB_DbgCurrent);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.TB_DbgChnl);
             this.Controls.Add(this.CB_LogFileEnable);
             this.Controls.Add(this.TB_Sleep);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.CMB_LogLevel);
+            this.Controls.Add(this.BTN_Temp);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.CB_LogEnable);
             this.Controls.Add(this.TB_Log);
@@ -620,6 +660,10 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox TB_MaxCurrent;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox TB_DbgChnl;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox TB_DbgCurrent;
     }
 }
 

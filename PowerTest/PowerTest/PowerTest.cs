@@ -274,8 +274,15 @@ namespace PowerTest
                     }
                 case 1:
                     {
-                        double[] tests = new double[] { 500, 1000, 1500, 2000 };
+                        double[] tests = new double[] { maxRange/4, maxRange/2, maxRange * 3 / 4, maxRange };
                         aTest = new MultiCurrentTest(port, tests, duration, 1000, CB_LogFileEnable.Checked);
+                        aTest.updateUi = UpdateUi;
+                        aTest.taskDone = TaskDone;
+                        break;
+                    }
+                case 2:
+                    {
+                        aTest = new SetCurrentPartTest(port, 1000, duration, 1000, CB_LogFileEnable.Checked);
                         aTest.updateUi = UpdateUi;
                         aTest.taskDone = TaskDone;
                         break;
@@ -321,7 +328,9 @@ namespace PowerTest
         {
             JzhPower jzh = port as JzhPower;
 
-            int[] chnl = new int[] { 1 };
+            double current = Int32.Parse(TB_DbgCurrent.Text);
+
+            int[] chnl = new int[] { Int32.Parse(TB_DbgChnl.Text) };
             string[] str = new string[40];
             for (int i = 0; i < str.Length; i++)
             {
@@ -329,13 +338,10 @@ namespace PowerTest
             }
             for (int i=0;i<chnl.Length;i++)
             {
-                if (i == chnl[i])
-                {
-                    str[i] = "1";
-                }
+                str[chnl[i]-1] = "1";
             }
 
-            jzh.SetCurrentChannels(1000, str);
+            jzh.SetCurrentChannels(current, str);
         }
     }
 }

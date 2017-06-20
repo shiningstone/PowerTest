@@ -324,14 +324,61 @@ class SetCurrentPartTest : JzhTest
 
         return str;
     }
+    private bool CheckChnlOk(int partIdx, int chnl, double setValue)
+    {
+        double[] current;
+        double[] voltage;
+
+        mJzh.SetCurrentChannels(setValue, GetChnl(chnl));
+        Thread.Sleep(1000);
+        mJzh.ReadVoltageAndCurrent(out current, out voltage);
+
+        if (Math.Abs(setValue - current[chnl]) > 10)
+        {
+            Logger.Show(Logger.Level.Bus, String.Format("Chnl {0} current {1}", partIdx * 40 + chnl, current[chnl]));
+            return false;
+        }
+        else
+        {
+            Logger.Show(Logger.Level.Bus, String.Format("Chnl {0} current {1}", partIdx * 40 + chnl, current[chnl]));
+            return true;
+        }
+    }
     public override void SingleRun()
     {
-        double[] currents = new double[] { 500, 1000, 1500, 2000 };
+        mJzh.part = "A";
+        int partIdx = mJzh.part.Equals("A") ? 0 : 1;
         for (int chnl = 0; chnl < 40; chnl++)
         {
-            for (int testPoint = 0; testPoint < currents.Length; testPoint++)
+            if (!CheckChnlOk(partIdx, chnl, mInitVal))
             {
-                mJzh.SetCurrentChannels(currents[testPoint], GetChnl(chnl));
+                Logger.Show(Logger.Level.Error, String.Format("PART {0} chnl {1} set fail", mJzh.part, chnl));
+            }
+        }
+
+        for (int chnl = 0; chnl < 40; chnl++)
+        {
+            if (!CheckChnlOk(partIdx, chnl, 0))
+            {
+                Logger.Show(Logger.Level.Error, String.Format("PART {0} chnl {1} set fail", mJzh.part, chnl));
+            }
+        }
+
+        mJzh.part = "B";
+        partIdx = mJzh.part.Equals("A") ? 0 : 1;
+        for (int chnl = 0; chnl < 40; chnl++)
+        {
+            if (!CheckChnlOk(partIdx, chnl, 0))
+            {
+                Logger.Show(Logger.Level.Error, String.Format("PART {0} chnl {1} set fail", mJzh.part, chnl));
+            }
+        }
+
+        for (int chnl = 0; chnl < 40; chnl++)
+        {
+            if (!CheckChnlOk(partIdx, chnl, 0))
+            {
+                Logger.Show(Logger.Level.Error, String.Format("PART {0} chnl {1} set fail", mJzh.part, chnl));
             }
         }
     }

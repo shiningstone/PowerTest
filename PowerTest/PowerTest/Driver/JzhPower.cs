@@ -383,37 +383,38 @@ namespace APPLEDIE
 
         public void SetCurrentChannels(double current, string[] location)
         {
-            Util.BitsArray map = new Util.BitsArray();
-            for (int i = 0; i < location.Length; i++)
-            {
-                if (location[i].Equals(1))
-                {
-                    map.Set(i);
-                }
-            }
-
-            /*command*/
-            byte[] header = new byte[]{ 0x68, 0x01, 0x01, 0x5D, 0x13, 0x40, 0x00 };
-            List<byte> cmd = header.ToList();
-
             for (int group = 0; group < 2; group++)
             {
+                /*command*/
+                byte[] header = new byte[] { 0x68, 0x01, 0x01, 0x5D, 0x13, 0x40, 0x00 };
+                List<byte> cmd = header.ToList();
+
                 /*group*/
                 int partIdx = part.Equals("A") ? 0 : 1;
                 cmd.Add((byte)(partIdx*2 + group));
 
                 /*currents*/
+                Util.BitsArray map = new Util.BitsArray();
                 byte[] data = new byte[] { 0x00, 0x00, (byte)(current * 10 / 256), (byte)(current * 10 % 256) };
                 for (int chnl = 0; chnl < 20; chnl++)
                 {
-                    if (location[group*20 + chnl].Equals("1"))
+                    if (location[group * 20 + chnl].Equals("1"))
                     {
                         cmd.InsertRange(cmd.Count, data);
+                        mCurrents[partIdx * 40 + group * 20 + chnl] = current;
+                        map.Set(chnl);
                     }
                     else
                     {
-                        byte[] prevSetting = new byte[] { 0x00, 0x00, (byte)(mCurrents[partIdx*40 + group*20 + chnl] * 10 / 256), (byte)(mCurrents[partIdx * 40 + group * 20 + chnl] * 10 % 256) };
-                        cmd.InsertRange(cmd.Count, data);
+                        byte[] prevSetting = new byte[] { 0x00, 0x00,
+                            (byte)(mCurrents[partIdx * 40 + group * 20 + chnl] * 10 / 256),
+                            (byte)(mCurrents[partIdx * 40 + group * 20 + chnl] * 10 % 256)
+                        };
+                        cmd.InsertRange(cmd.Count, prevSetting);
+                        if (mCurrents[partIdx * 40 + group * 20 + chnl] > 0)
+                        {
+                            map.Set(chnl);
+                        }
                     }
                 }
 
