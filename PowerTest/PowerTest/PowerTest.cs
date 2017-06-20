@@ -260,13 +260,14 @@ namespace PowerTest
             int duration = Int32.Parse(TB_Duration.Text);
             bool forceClose = CB_ForceClose.Checked;
             bool forceDisconnect = CB_ForceDisconnect.Checked;
+            int maxRange = Int32.Parse(TB_MaxCurrent.Text);
 
             JzhTest aTest = null;
             switch (option)
             {
                 case 0:
                     {
-                        aTest = new SingleCurrentTest(port, 2000, duration, 1000, CB_LogFileEnable.Checked);
+                        aTest = new SingleCurrentTest(port, maxRange, duration, 1000, CB_LogFileEnable.Checked);
                         break;
                     }
                 case 1:

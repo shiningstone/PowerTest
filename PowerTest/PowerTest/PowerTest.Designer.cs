@@ -57,6 +57,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.CB_LogEnable = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.BTN_Temp = new System.Windows.Forms.Button();
             this.TB_StabilityResult = new System.Windows.Forms.Label();
             this.BTN_StabilityStart = new System.Windows.Forms.Button();
             this.CB_ForceDisconnect = new System.Windows.Forms.CheckBox();
@@ -70,7 +71,9 @@
             this.label9 = new System.Windows.Forms.Label();
             this.TB_Sleep = new System.Windows.Forms.TextBox();
             this.CB_LogFileEnable = new System.Windows.Forms.CheckBox();
-            this.BTN_Temp = new System.Windows.Forms.Button();
+            this.label11 = new System.Windows.Forms.Label();
+            this.TB_MaxCurrent = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -358,6 +361,9 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.label12);
+            this.groupBox4.Controls.Add(this.TB_MaxCurrent);
+            this.groupBox4.Controls.Add(this.label11);
             this.groupBox4.Controls.Add(this.BTN_Temp);
             this.groupBox4.Controls.Add(this.TB_StabilityResult);
             this.groupBox4.Controls.Add(this.BTN_StabilityStart);
@@ -374,6 +380,16 @@
             this.groupBox4.TabIndex = 37;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Stability Test";
+            // 
+            // BTN_Temp
+            // 
+            this.BTN_Temp.Location = new System.Drawing.Point(314, 19);
+            this.BTN_Temp.Name = "BTN_Temp";
+            this.BTN_Temp.Size = new System.Drawing.Size(75, 23);
+            this.BTN_Temp.TabIndex = 41;
+            this.BTN_Temp.Text = "TempDbg";
+            this.BTN_Temp.UseVisualStyleBackColor = true;
+            this.BTN_Temp.Click += new System.EventHandler(this.BTN_Temp_Click);
             // 
             // TB_StabilityResult
             // 
@@ -495,15 +511,31 @@
             this.CB_LogFileEnable.Text = "Log File Enable";
             this.CB_LogFileEnable.UseVisualStyleBackColor = true;
             // 
-            // BTN_Temp
+            // label11
             // 
-            this.BTN_Temp.Location = new System.Drawing.Point(314, 19);
-            this.BTN_Temp.Name = "BTN_Temp";
-            this.BTN_Temp.Size = new System.Drawing.Size(75, 23);
-            this.BTN_Temp.TabIndex = 41;
-            this.BTN_Temp.Text = "TempDbg";
-            this.BTN_Temp.UseVisualStyleBackColor = true;
-            this.BTN_Temp.Click += new System.EventHandler(this.BTN_Temp_Click);
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(245, 56);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(64, 13);
+            this.label11.TabIndex = 41;
+            this.label11.Text = "Max Current";
+            // 
+            // TB_MaxCurrent
+            // 
+            this.TB_MaxCurrent.Location = new System.Drawing.Point(321, 53);
+            this.TB_MaxCurrent.Name = "TB_MaxCurrent";
+            this.TB_MaxCurrent.Size = new System.Drawing.Size(42, 20);
+            this.TB_MaxCurrent.TabIndex = 44;
+            this.TB_MaxCurrent.Text = "5000";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(366, 56);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(22, 13);
+            this.label12.TabIndex = 45;
+            this.label12.Text = "mA";
             // 
             // PowerTest
             // 
@@ -585,6 +617,9 @@
         private System.Windows.Forms.TextBox TB_Sleep;
         private System.Windows.Forms.CheckBox CB_LogFileEnable;
         private System.Windows.Forms.Button BTN_Temp;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox TB_MaxCurrent;
+        private System.Windows.Forms.Label label12;
     }
 }
 
