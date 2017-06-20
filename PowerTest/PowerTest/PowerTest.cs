@@ -268,18 +268,20 @@ namespace PowerTest
                 case 0:
                     {
                         aTest = new SingleCurrentTest(port, maxRange, duration, 1000, CB_LogFileEnable.Checked);
+                        aTest.updateUi = UpdateUi;
+                        aTest.taskDone = TaskDone;
                         break;
                     }
                 case 1:
                     {
                         double[] tests = new double[] { 500, 1000, 1500, 2000 };
                         aTest = new MultiCurrentTest(port, tests, duration, 1000, CB_LogFileEnable.Checked);
+                        aTest.updateUi = UpdateUi;
+                        aTest.taskDone = TaskDone;
                         break;
                     }
             }
 
-            aTest.updateUi = UpdateUi;
-            aTest.taskDone = TaskDone;
             Thread t = new Thread(new ThreadStart(aTest.Run));
             t.Start();
         }

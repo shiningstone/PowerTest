@@ -87,7 +87,10 @@ abstract class LongTermTest
         }
 
         updateUi(Summary(mStart, cur, count));
-        taskDone();
+        if (taskDone != null)
+        {
+            taskDone();
+        }
     }
 }
 class SendFile : LongTermTest
@@ -285,50 +288,50 @@ class MultiCurrentTest : JzhTest
     {
         for (int i = 0; i < mTestPoints.Length; i++)
         {
-            SingleCurrentTest aPointTest = new SingleCurrentTest(mPort, mTestPoints[i], mTimes / 4, mInterval);
+            SingleCurrentTest aPointTest = new SingleCurrentTest(mPort, mTestPoints[i], mTimes / mTestPoints.Length, mInterval);
             aPointTest.updateUi = updateUi;
             aPointTest.SetDatFile(mDatFile);
             aPointTest.Run();
         }
     }
-    class SetCurrentPartTest : JzhTest
+}
+class SetCurrentPartTest : JzhTest
+{
+    public double mInitVal;
+    public SetCurrentPartTest(Iport port, double initVal, int duration, int interval = 1000, bool logFile = false)
+        : base("SetCurrentPartTest", port, duration, interval, logFile)
     {
-        public double mInitVal;
-        public SetCurrentPartTest(Iport port, double initVal, int duration, int interval = 1000, bool logFile = false)
-            : base("SetCurrentPartTest", port, duration, interval, logFile)
+        mInitVal = initVal;
+    }
+    public void SetDatFile(StreamWriter sw)
+    {
+        mDatFile = sw;
+    }
+    string[] GetChnl(int chnl)
+    {
+        string[] str = new string[40];
+        for (int i = 0; i < str.Length; i++)
         {
-            mInitVal = initVal;
-        }
-        public void SetDatFile(StreamWriter sw)
-        {
-            mDatFile = sw;
-        }
-        string[] GetChnl(int chnl)
-        {
-            string[] str = new string[40];
-            for (int i = 0; i < str.Length; i++)
+            if (i == chnl)
             {
-                if (i == chnl)
-                {
-                    str[i] = "1";
-                }
-                else
-                {
-                    str[i] = "0";
-                }
+                str[i] = "1";
             }
-
-            return str;
-        }
-        public override void SingleRun()
-        {
-            double[] currents = new double[] { 500,1000,1500,2000 };
-            for (int chnl=0;chnl<40; chnl++)
+            else
             {
-                for (int testPoint = 0; testPoint < currents.Length; testPoint++)
-                {
-                    mJzh.SetCurrentChannels(currents[testPoint], GetChnl(chnl));
-                }
+                str[i] = "0";
+            }
+        }
+
+        return str;
+    }
+    public override void SingleRun()
+    {
+        double[] currents = new double[] { 500, 1000, 1500, 2000 };
+        for (int chnl = 0; chnl < 40; chnl++)
+        {
+            for (int testPoint = 0; testPoint < currents.Length; testPoint++)
+            {
+                mJzh.SetCurrentChannels(currents[testPoint], GetChnl(chnl));
             }
         }
     }
