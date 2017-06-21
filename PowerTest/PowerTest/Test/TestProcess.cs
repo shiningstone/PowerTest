@@ -11,7 +11,7 @@ abstract class LongTermTest
 {
     public delegate void UpdateUi(string str);
     public UpdateUi updateUi;
-    const int UpdateIntval = 5;
+    const int UpdateIntval = 60;
     private int lastUiSummary = 1;
 
     public delegate void TaskDone();

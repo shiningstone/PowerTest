@@ -39,7 +39,7 @@ namespace PowerTest
         }
         private void UpdateUi(string str)
         {
-            Logger.Show(Logger.Level.Bus, str);
+            Logger.Show(Logger.Level.Operation, str);
 
             if (InvokeRequired)
             {

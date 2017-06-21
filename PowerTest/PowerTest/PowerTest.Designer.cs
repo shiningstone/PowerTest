@@ -465,7 +465,7 @@
             this.TB_Duration.Name = "TB_Duration";
             this.TB_Duration.Size = new System.Drawing.Size(68, 20);
             this.TB_Duration.TabIndex = 40;
-            this.TB_Duration.Text = "1";
+            this.TB_Duration.Text = "10000";
             // 
             // label8
             // 
