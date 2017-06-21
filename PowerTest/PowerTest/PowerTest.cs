@@ -282,7 +282,7 @@ namespace PowerTest
                     }
                 case 2:
                     {
-                        aTest = new SetCurrentPartTest(port, 1000, duration, 1000, CB_LogFileEnable.Checked);
+                        aTest = new SetCurrentPartTest(port, maxRange, duration, 1000, CB_LogFileEnable.Checked);
                         aTest.updateUi = UpdateUi;
                         aTest.taskDone = TaskDone;
                         break;

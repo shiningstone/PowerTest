@@ -173,6 +173,9 @@ abstract class JzhTest : LongTermTest
                 Logger.mLogFile = null;
             }
         }
+
+        
+        Logger.Show(Logger.Level.Operation, "Test Fw : " + mJzh.GetFwVer());
     }
     private double[] prevCurrents = null;
     private double[] prevVoltages = null;

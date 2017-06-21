@@ -401,7 +401,7 @@
             this.TB_MaxCurrent.Name = "TB_MaxCurrent";
             this.TB_MaxCurrent.Size = new System.Drawing.Size(42, 20);
             this.TB_MaxCurrent.TabIndex = 44;
-            this.TB_MaxCurrent.Text = "5000";
+            this.TB_MaxCurrent.Text = "2000";
             // 
             // label11
             // 
