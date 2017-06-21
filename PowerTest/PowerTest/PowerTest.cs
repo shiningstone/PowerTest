@@ -343,5 +343,11 @@ namespace PowerTest
 
             jzh.SetCurrentChannels(current, str);
         }
+
+        private void BTN_DbgGetFwVer_Click(object sender, EventArgs e)
+        {
+            JzhPower jzh = port as JzhPower;
+            TB_DbgGetFwVer.Text = "Fw:" + jzh.GetFwVer();
+        }
     }
 }

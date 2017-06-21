@@ -324,6 +324,25 @@ class SetCurrentPartTest : JzhTest
 
         return str;
     }
+    const int EVEN = 0;
+    const int ODD = 1;
+    string[] GetChnls(int flag)
+    {
+        string[] str = new string[40];
+        for (int i = 0; i < str.Length; i++)
+        {
+            if (i%2 == flag)
+            {
+                str[i] = "1";
+            }
+            else
+            {
+                str[i] = "0";
+            }
+        }
+
+        return str;
+    }
     private bool CheckChnlOk(int partIdx, int chnl, double setValue)
     {
         double[] current;
@@ -333,53 +352,91 @@ class SetCurrentPartTest : JzhTest
         Thread.Sleep(1000);
         mJzh.ReadVoltageAndCurrent(out current, out voltage);
 
-        if (Math.Abs(setValue - current[chnl]) > 10)
+        if (Math.Abs(setValue - current[chnl]) < 10)
         {
             Logger.Show(Logger.Level.Bus, String.Format("Chnl {0} current {1}", partIdx * 40 + chnl, current[chnl]));
-            return false;
+        }
+        else if (Math.Abs(setValue - current[chnl]) < 100)
+        {
+            Logger.Show(Logger.Level.Warning, String.Format("Chnl {0} current {1}", partIdx * 40 + chnl, current[chnl]));
         }
         else
         {
-            Logger.Show(Logger.Level.Bus, String.Format("Chnl {0} current {1}", partIdx * 40 + chnl, current[chnl]));
-            return true;
+            Logger.Show(Logger.Level.Error, String.Format("Chnl {0} current {1}", partIdx * 40 + chnl, current[chnl]));
         }
+
+        return true;
     }
-    public override void SingleRun()
+    private bool CheckChnlsOk(int flag, int partIdx, double setValue)
+    {
+        double[] current;
+        double[] voltage;
+
+        mJzh.SetCurrentChannels(setValue, GetChnls(flag));
+        Thread.Sleep(1000);
+        mJzh.ReadVoltageAndCurrent(out current, out voltage);
+
+        for (int chnl = flag; chnl < 40; chnl += 2)
+        {
+            if (Math.Abs(setValue - current[chnl]) < 10)
+            {
+                Logger.Show(Logger.Level.Bus, String.Format("Chnl {0} current {1}", partIdx * 40 + chnl, current[chnl]));
+            }
+            else if (Math.Abs(setValue - current[chnl]) < 100)
+            {
+                Logger.Show(Logger.Level.Warning, String.Format("Chnl {0} current {1}", partIdx * 40 + chnl, current[chnl]));
+            }
+            else
+            {
+                Logger.Show(Logger.Level.Error, String.Format("Chnl {0} current {1}", partIdx * 40 + chnl, current[chnl]));
+            }
+        }
+
+        return true;
+    }
+    public void OneChannelTest()
     {
         mJzh.part = "A";
         int partIdx = mJzh.part.Equals("A") ? 0 : 1;
         for (int chnl = 0; chnl < 40; chnl++)
         {
-            if (!CheckChnlOk(partIdx, chnl, mInitVal))
-            {
-                Logger.Show(Logger.Level.Error, String.Format("PART {0} chnl {1} set fail", mJzh.part, chnl));
-            }
+            CheckChnlOk(partIdx, chnl, mInitVal);
         }
 
         for (int chnl = 0; chnl < 40; chnl++)
         {
-            if (!CheckChnlOk(partIdx, chnl, 0))
-            {
-                Logger.Show(Logger.Level.Error, String.Format("PART {0} chnl {1} set fail", mJzh.part, chnl));
-            }
+            CheckChnlOk(partIdx, chnl, 0);
         }
 
         mJzh.part = "B";
         partIdx = mJzh.part.Equals("A") ? 0 : 1;
         for (int chnl = 0; chnl < 40; chnl++)
         {
-            if (!CheckChnlOk(partIdx, chnl, 0))
-            {
-                Logger.Show(Logger.Level.Error, String.Format("PART {0} chnl {1} set fail", mJzh.part, chnl));
-            }
+            CheckChnlOk(partIdx, chnl, mInitVal);
         }
 
         for (int chnl = 0; chnl < 40; chnl++)
         {
-            if (!CheckChnlOk(partIdx, chnl, 0))
-            {
-                Logger.Show(Logger.Level.Error, String.Format("PART {0} chnl {1} set fail", mJzh.part, chnl));
-            }
+            CheckChnlOk(partIdx, chnl, 0);
         }
+    }
+    protected void HalfChannelsTest()
+    {
+        mJzh.part = "A";
+        CheckChnlsOk(ODD, 0, mInitVal);
+        CheckChnlsOk(EVEN, 0, mInitVal);
+        CheckChnlsOk(ODD, 0, 0);
+        CheckChnlsOk(EVEN, 0, 0);
+
+        mJzh.part = "B";
+        CheckChnlsOk(ODD, 1, mInitVal);
+        CheckChnlsOk(EVEN, 1, mInitVal);
+        CheckChnlsOk(ODD, 1, 0);
+        CheckChnlsOk(EVEN, 1, 0);
+    }
+    public override void SingleRun()
+    {
+        OneChannelTest();
+        HalfChannelsTest();
     }
 }

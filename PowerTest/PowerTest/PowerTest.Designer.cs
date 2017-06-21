@@ -57,7 +57,9 @@
             this.label5 = new System.Windows.Forms.Label();
             this.CB_LogEnable = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.BTN_Temp = new System.Windows.Forms.Button();
+            this.label12 = new System.Windows.Forms.Label();
+            this.TB_MaxCurrent = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.TB_StabilityResult = new System.Windows.Forms.Label();
             this.BTN_StabilityStart = new System.Windows.Forms.Button();
             this.CB_ForceDisconnect = new System.Windows.Forms.CheckBox();
@@ -67,17 +69,17 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.CMB_TestType = new System.Windows.Forms.ComboBox();
+            this.BTN_Temp = new System.Windows.Forms.Button();
             this.CMB_LogLevel = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.TB_Sleep = new System.Windows.Forms.TextBox();
             this.CB_LogFileEnable = new System.Windows.Forms.CheckBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.TB_MaxCurrent = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
             this.TB_DbgChnl = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.TB_DbgCurrent = new System.Windows.Forms.TextBox();
+            this.BTN_DbgGetFwVer = new System.Windows.Forms.Button();
+            this.TB_DbgGetFwVer = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -384,15 +386,31 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Stability Test";
             // 
-            // BTN_Temp
+            // label12
             // 
-            this.BTN_Temp.Location = new System.Drawing.Point(704, 395);
-            this.BTN_Temp.Name = "BTN_Temp";
-            this.BTN_Temp.Size = new System.Drawing.Size(75, 23);
-            this.BTN_Temp.TabIndex = 41;
-            this.BTN_Temp.Text = "TempDbg";
-            this.BTN_Temp.UseVisualStyleBackColor = true;
-            this.BTN_Temp.Click += new System.EventHandler(this.BTN_Temp_Click);
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(366, 56);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(22, 13);
+            this.label12.TabIndex = 45;
+            this.label12.Text = "mA";
+            // 
+            // TB_MaxCurrent
+            // 
+            this.TB_MaxCurrent.Location = new System.Drawing.Point(321, 53);
+            this.TB_MaxCurrent.Name = "TB_MaxCurrent";
+            this.TB_MaxCurrent.Size = new System.Drawing.Size(42, 20);
+            this.TB_MaxCurrent.TabIndex = 44;
+            this.TB_MaxCurrent.Text = "5000";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(245, 56);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(64, 13);
+            this.label11.TabIndex = 41;
+            this.label11.Text = "Max Current";
             // 
             // TB_StabilityResult
             // 
@@ -475,6 +493,16 @@
             this.CMB_TestType.Size = new System.Drawing.Size(121, 21);
             this.CMB_TestType.TabIndex = 0;
             // 
+            // BTN_Temp
+            // 
+            this.BTN_Temp.Location = new System.Drawing.Point(554, 408);
+            this.BTN_Temp.Name = "BTN_Temp";
+            this.BTN_Temp.Size = new System.Drawing.Size(85, 23);
+            this.BTN_Temp.TabIndex = 41;
+            this.BTN_Temp.Text = "DbgSetCurrent";
+            this.BTN_Temp.UseVisualStyleBackColor = true;
+            this.BTN_Temp.Click += new System.EventHandler(this.BTN_Temp_Click);
+            // 
             // CMB_LogLevel
             // 
             this.CMB_LogLevel.FormattingEnabled = true;
@@ -514,35 +542,9 @@
             this.CB_LogFileEnable.Text = "Log File Enable";
             this.CB_LogFileEnable.UseVisualStyleBackColor = true;
             // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(245, 56);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(64, 13);
-            this.label11.TabIndex = 41;
-            this.label11.Text = "Max Current";
-            // 
-            // TB_MaxCurrent
-            // 
-            this.TB_MaxCurrent.Location = new System.Drawing.Point(321, 53);
-            this.TB_MaxCurrent.Name = "TB_MaxCurrent";
-            this.TB_MaxCurrent.Size = new System.Drawing.Size(42, 20);
-            this.TB_MaxCurrent.TabIndex = 44;
-            this.TB_MaxCurrent.Text = "5000";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(366, 56);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(22, 13);
-            this.label12.TabIndex = 45;
-            this.label12.Text = "mA";
-            // 
             // TB_DbgChnl
             // 
-            this.TB_DbgChnl.Location = new System.Drawing.Point(569, 397);
+            this.TB_DbgChnl.Location = new System.Drawing.Point(698, 409);
             this.TB_DbgChnl.Name = "TB_DbgChnl";
             this.TB_DbgChnl.Size = new System.Drawing.Size(34, 20);
             this.TB_DbgChnl.TabIndex = 46;
@@ -550,7 +552,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(520, 403);
+            this.label13.Location = new System.Drawing.Point(649, 415);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(46, 13);
             this.label13.TabIndex = 47;
@@ -559,7 +561,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(609, 403);
+            this.label14.Location = new System.Drawing.Point(738, 415);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(41, 13);
             this.label14.TabIndex = 48;
@@ -567,16 +569,37 @@
             // 
             // TB_DbgCurrent
             // 
-            this.TB_DbgCurrent.Location = new System.Drawing.Point(656, 397);
+            this.TB_DbgCurrent.Location = new System.Drawing.Point(785, 409);
             this.TB_DbgCurrent.Name = "TB_DbgCurrent";
             this.TB_DbgCurrent.Size = new System.Drawing.Size(34, 20);
             this.TB_DbgCurrent.TabIndex = 49;
+            // 
+            // BTN_DbgGetFwVer
+            // 
+            this.BTN_DbgGetFwVer.Location = new System.Drawing.Point(554, 379);
+            this.BTN_DbgGetFwVer.Name = "BTN_DbgGetFwVer";
+            this.BTN_DbgGetFwVer.Size = new System.Drawing.Size(85, 23);
+            this.BTN_DbgGetFwVer.TabIndex = 50;
+            this.BTN_DbgGetFwVer.Text = "DbgGetFwVer";
+            this.BTN_DbgGetFwVer.UseVisualStyleBackColor = true;
+            this.BTN_DbgGetFwVer.Click += new System.EventHandler(this.BTN_DbgGetFwVer_Click);
+            // 
+            // TB_DbgGetFwVer
+            // 
+            this.TB_DbgGetFwVer.AutoSize = true;
+            this.TB_DbgGetFwVer.Location = new System.Drawing.Point(651, 385);
+            this.TB_DbgGetFwVer.Name = "TB_DbgGetFwVer";
+            this.TB_DbgGetFwVer.Size = new System.Drawing.Size(44, 13);
+            this.TB_DbgGetFwVer.TabIndex = 51;
+            this.TB_DbgGetFwVer.Text = "Fw:N/A";
             // 
             // PowerTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(847, 440);
+            this.Controls.Add(this.TB_DbgGetFwVer);
+            this.Controls.Add(this.BTN_DbgGetFwVer);
             this.Controls.Add(this.TB_DbgCurrent);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.label13);
@@ -664,6 +687,8 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox TB_DbgCurrent;
+        private System.Windows.Forms.Button BTN_DbgGetFwVer;
+        private System.Windows.Forms.Label TB_DbgGetFwVer;
     }
 }
 

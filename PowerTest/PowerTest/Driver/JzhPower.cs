@@ -146,7 +146,14 @@ namespace APPLEDIE
         {
             if (cmd[4] == (byte)JzhOp.Read)
             {
-                return 328;
+                if (cmd[5]==0x40 && cmd[6]==0x0f)      /*get firmware version*/
+                {
+                    return 0x0E;
+                }
+                else
+                {
+                    return 328;
+                }
             }
             else if (cmd[4] == (byte)JzhOp.Write)
             {
@@ -245,6 +252,20 @@ namespace APPLEDIE
             }
 
             return new byte[0];
+        }
+        public string GetFwVer()
+        {
+            byte[] cmd = { 0x68, 0x01, 0x01, 0x08, 0x10, 0x40, 0x0F, 0x57 };
+            /*68 01 01 0e 90 40 0f 20 17 06 20 00 22 e2    Fw ver: date:20170620 Major: 0 Minor: 0x22*/
+
+            byte[] rsp = Query(cmd);
+
+            byte[] major = new byte[] { rsp[11] };
+            byte[] minor = new byte[] { rsp[12] };
+            byte[] date = new byte[4];
+            Array.Copy(rsp, 7, date, 0, date.Length);
+
+            return String.Format("{0}-{1}.{2}", Util.BytesToHexString(date), Util.BytesToHexString(major), Util.BytesToHexString(minor));
         }
         public void SetCurrent(double current)
         {
