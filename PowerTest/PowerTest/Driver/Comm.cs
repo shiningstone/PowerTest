@@ -221,19 +221,26 @@ namespace BIModel
             }
             else
             {
-                rsp = new byte[328];
-
-                rsp[0] = cmd[0];
-                rsp[1] = cmd[1];
-                rsp[2] = cmd[2];
-                rsp[4] = (byte)(cmd[4] + 0x80);
-
-                byte cs = 0;
-                for (int i = 1; i < rsp.Length-1; i++)
+                if (cmd[5] == 0x40 && cmd[6] == 0x0f)
                 {
-                    cs = (byte)(cs ^ rsp[i]);
+                    rsp = new byte[] { 0x68,0x01,0x01,0x0e,0x90,0x40,0x0f,0x20,0x17,0x06,0x20,0x00,0x22,0xe2 };
                 }
-                rsp[rsp.Length - 1] = cs;
+                else
+                {
+                    rsp = new byte[328];
+
+                    rsp[0] = cmd[0];
+                    rsp[1] = cmd[1];
+                    rsp[2] = cmd[2];
+                    rsp[4] = (byte)(cmd[4] + 0x80);
+
+                    byte cs = 0;
+                    for (int i = 1; i < rsp.Length - 1; i++)
+                    {
+                        cs = (byte)(cs ^ rsp[i]);
+                    }
+                    rsp[rsp.Length - 1] = cs;
+                }
             }
 
             return rsp;
