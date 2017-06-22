@@ -240,6 +240,8 @@ namespace BIModel
                         cs = (byte)(cs ^ rsp[i]);
                     }
                     rsp[rsp.Length - 1] = cs;
+
+                    Thread.Sleep(2000);
                 }
             }
 
